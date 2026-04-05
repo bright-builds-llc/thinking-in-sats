@@ -59,6 +59,16 @@ export function QuizPage(props: QuizPageProps) {
     );
   });
 
+  const maybeQuestion = createMemo(() => {
+    const currentItem = maybeCurrentItem();
+
+    if (!currentItem) {
+      return null;
+    }
+
+    return createQuizQuestion(currentItem);
+  });
+
   const maybeResult = createMemo<QuizQuestionResult | null>(() => {
     const question = maybeQuestion();
     const maybeSelectedChoiceIdValue = maybeSelectedChoiceId();
@@ -88,15 +98,6 @@ export function QuizPage(props: QuizPageProps) {
     setQuestionIndex((currentValue) => currentValue + 1);
     setMaybeSelectedChoiceId(null);
   };
-  const maybeQuestion = createMemo(() => {
-    const currentItem = maybeCurrentItem();
-
-    if (!currentItem) {
-      return null;
-    }
-
-    return createQuizQuestion(currentItem);
-  });
 
   return (
     <section class="page quiz-page">
