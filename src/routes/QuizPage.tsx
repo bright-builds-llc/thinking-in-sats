@@ -201,9 +201,7 @@ export function QuizPage(props: QuizPageProps) {
             <div class="surface-card quiz-panel">
               <div class="quiz-panel__header">
                 <span class="stat-chip">Question #{questionIndex() + 1}</span>
-                <span class="stat-chip">
-                  Best guess near {formatSatLabel(quizView.question.correctChoiceSatAmount)}
-                </span>
+                <span class="stat-chip">Any rank can be right</span>
               </div>
 
               <QuizChoices
