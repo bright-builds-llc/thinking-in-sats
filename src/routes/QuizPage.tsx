@@ -1,4 +1,4 @@
-import { Show, batch, createEffect, createMemo, createSignal, on } from "solid-js";
+import { Show, batch, createMemo, createSignal } from "solid-js";
 
 import { QuizCard } from "../components/quiz/QuizCard";
 import { QuizChoices } from "../components/quiz/QuizChoices";
@@ -141,24 +141,6 @@ export function QuizPage(props: QuizPageProps) {
     return evaluateQuizAnswer(question, maybeSelectedChoiceIdValue);
   });
 
-  createEffect(
-    on(
-      maybeCurrentItem,
-      (currentItem, maybePreviousItem) => {
-        if (
-          !currentItem ||
-          !maybePreviousItem ||
-          currentItem.id === maybePreviousItem.id
-        ) {
-          return;
-        }
-
-        scrollQuestionCardIntoView(maybeQuizLayoutElement);
-      },
-      { defer: true },
-    ),
-  );
-
   const handleChoiceSelect = (choiceId: string) => {
     if (maybeResult()) {
       return;
@@ -179,6 +161,14 @@ export function QuizPage(props: QuizPageProps) {
 
       setQuestionIndex((currentValue) => currentValue + 1);
     });
+
+    queueMicrotask(() => {
+      scrollQuestionCardIntoView(maybeQuizLayoutElement);
+    });
+  };
+
+  const handleQuizLayoutRef = (element: HTMLDivElement) => {
+    maybeQuizLayoutElement = element;
   };
 
   return (
@@ -205,7 +195,7 @@ export function QuizPage(props: QuizPageProps) {
         }
       >
         {(quizView) => (
-          <div class="quiz-layout" ref={maybeQuizLayoutElement}>
+          <div class="quiz-layout" ref={handleQuizLayoutRef}>
             <QuizCard item={quizView.currentItem} />
 
             <div class="surface-card quiz-panel">

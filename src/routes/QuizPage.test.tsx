@@ -50,6 +50,10 @@ function createRect(top: number, height = 0): DOMRect {
   } as DOMRect;
 }
 
+function flushMicrotask(): Promise<void> {
+  return Promise.resolve();
+}
+
 describe("QuizPage", () => {
   afterEach(() => {
     Object.defineProperty(window, "scrollY", {
@@ -97,7 +101,7 @@ describe("QuizPage", () => {
       .spyOn(window, "scrollTo")
       .mockImplementation(() => undefined);
     vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(
-      function mockGetBoundingClientRect() {
+      function mockGetBoundingClientRect(this: HTMLElement) {
         if (this.classList.contains("quiz-layout")) {
           return createRect(-180, 320);
         }
@@ -114,6 +118,7 @@ describe("QuizPage", () => {
 
     // Act
     await user.click(screen.getByRole("button", { name: "Next item" }));
+    await flushMicrotask();
 
     // Assert
     expect(
