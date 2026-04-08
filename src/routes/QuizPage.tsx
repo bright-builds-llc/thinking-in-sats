@@ -26,7 +26,46 @@ type QuizPageProps = {
   quoteState: QuoteState;
 };
 
+const QUESTION_CARD_SCROLL_GAP_PX = 16;
+
+function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    return false;
+  }
+
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function scrollQuestionCardIntoView(
+  maybeQuizLayoutElement: HTMLDivElement | undefined,
+) {
+  if (typeof window === "undefined" || !maybeQuizLayoutElement) {
+    return;
+  }
+
+  const headerHeight =
+    document
+      .querySelector<HTMLElement>(".site-header")
+      ?.getBoundingClientRect().height ?? 0;
+  const quizLayoutTop =
+    window.scrollY + maybeQuizLayoutElement.getBoundingClientRect().top;
+  const targetScrollTop = Math.max(
+    quizLayoutTop - headerHeight - QUESTION_CARD_SCROLL_GAP_PX,
+    0,
+  );
+
+  if (window.scrollY <= targetScrollTop + QUESTION_CARD_SCROLL_GAP_PX) {
+    return;
+  }
+
+  window.scrollTo({
+    top: targetScrollTop,
+    behavior: prefersReducedMotion() ? "auto" : "smooth",
+  });
+}
+
 export function QuizPage(props: QuizPageProps) {
+  let maybeQuizLayoutElement: HTMLDivElement | undefined;
   const [questionIndex, setQuestionIndex] = createSignal(0);
   const [maybePreviousItemId, setMaybePreviousItemId] = createSignal<
     string | undefined
@@ -122,6 +161,14 @@ export function QuizPage(props: QuizPageProps) {
 
       setQuestionIndex((currentValue) => currentValue + 1);
     });
+
+    queueMicrotask(() => {
+      scrollQuestionCardIntoView(maybeQuizLayoutElement);
+    });
+  };
+
+  const handleQuizLayoutRef = (element: HTMLDivElement) => {
+    maybeQuizLayoutElement = element;
   };
 
   return (
@@ -148,7 +195,7 @@ export function QuizPage(props: QuizPageProps) {
         }
       >
         {(quizView) => (
-          <div class="quiz-layout">
+          <div class="quiz-layout" ref={handleQuizLayoutRef}>
             <QuizCard item={quizView.currentItem} />
 
             <div class="surface-card quiz-panel">
