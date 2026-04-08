@@ -1,4 +1,4 @@
-import { For, createMemo } from "solid-js";
+import { For, Show, createMemo } from "solid-js";
 
 import { buildTimelineMarks, buildTimelinePlacements } from "../../domain/timelineLayout";
 import type { EverydayItemWithSats } from "../../domain/itemTypes";
@@ -14,7 +14,10 @@ type TimelineSectionProps = {
 
 export function TimelineSection(props: TimelineSectionProps) {
   const placements = createMemo(() =>
-    buildTimelinePlacements(props.items, props.isMobileLayout ? "mobile" : "desktop"),
+    buildTimelinePlacements(
+      props.items,
+      props.isMobileLayout ? "mobile" : "desktop",
+    ),
   );
   const marks = createMemo(() => {
     const items = props.items;
@@ -25,6 +28,11 @@ export function TimelineSection(props: TimelineSectionProps) {
 
     return buildTimelineMarks(items[0].satValue, items[items.length - 1].satValue);
   });
+  const readingHelpCopy = createMemo(() =>
+    props.isMobileLayout
+      ? "On smaller screens the cards switch to a spaced list in sats order so every anchor stays readable."
+      : "Each card sits on a logarithmic position, then shifts slightly when needed so neighboring labels stay readable.",
+  );
 
   return (
     <section class="timeline-section">
@@ -39,28 +47,36 @@ export function TimelineSection(props: TimelineSectionProps) {
         </article>
         <article class="surface-card">
           <h3>Reading the line</h3>
-          <p>
-            Each card sits on a logarithmic position, then shifts slightly when needed
-            so neighboring labels stay readable.
-          </p>
+          <p>{readingHelpCopy()}</p>
         </article>
       </div>
 
-      <div class="timeline-panel">
-        <div class="timeline-scroll-shell">
-          <div
-            class="timeline-scroll timeline-stage"
-            style={{
-              "--timeline-decades": `${Math.max(1, marks().length)}`,
-            }}
-          >
-            <div class="timeline-spine" aria-hidden="true" />
-            <TimelineScale markers={marks()} />
+      <div class={`timeline-panel${props.isMobileLayout ? " timeline-panel--mobile" : ""}`}>
+        <Show
+          when={props.isMobileLayout}
+          fallback={
+            <div class="timeline-scroll-shell">
+              <div
+                class="timeline-scroll timeline-stage"
+                style={{
+                  "--timeline-decades": `${Math.max(1, marks().length)}`,
+                }}
+              >
+                <div class="timeline-spine" aria-hidden="true" />
+                <TimelineScale markers={marks()} />
+                <For each={placements()}>
+                  {(placement) => <TimelineItemCard placement={placement} />}
+                </For>
+              </div>
+            </div>
+          }
+        >
+          <div class="timeline-mobile-list">
             <For each={placements()}>
-              {(placement) => <TimelineItemCard placement={placement} />}
+              {(placement) => <TimelineItemCard placement={placement} isMobileList />}
             </For>
           </div>
-        </div>
+        </Show>
       </div>
     </section>
   );
