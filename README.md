@@ -141,6 +141,16 @@ bun run preview
 Because the app uses hash-based routing, static-hosted deep links are expressed
 as hash routes such as `#/quiz`.
 
+To build the site with the same asset base path used on GitHub Pages, run:
+
+```bash
+PAGES_BASE_PATH=/thinking-in-sats/ bun run build
+bun run preview
+```
+
+That Pages-shaped preview is served from
+`http://localhost:4173/thinking-in-sats/`.
+
 ## Available scripts
 
 | Command | What it does |
@@ -179,13 +189,23 @@ At a high level, the app works like this:
 
 ## Deployment
 
-GitHub currently lists this repository's Pages deployment as:
+This repository deploys to GitHub Pages on every push to `main` through
+`.github/workflows/deploy-pages.yml`.
 
 - **Pages URL:** `https://bright-builds-llc.github.io/thinking-in-sats/`
 - **Publishing mode:** GitHub Pages with workflow-based builds
+- **Deployment trigger:** pushes to `main` and manual `workflow_dispatch`
 
-The app is a static Vite build, so the generated `dist/` output is suitable for
-static hosting.
+The deployment workflow:
+
+1. installs dependencies with Bun
+2. runs `bun run verify`
+3. uploads the generated `dist/` directory to GitHub Pages
+
+The workflow sets `PAGES_BASE_PATH=/thinking-in-sats/` so Vite emits asset URLs
+for the repository-scoped Pages path. Because the app already uses
+`HashRouter`, the static deployment does not need an additional route fallback
+file for deep links such as `#/quiz`.
 
 ## External data source
 

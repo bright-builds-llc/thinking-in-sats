@@ -24,13 +24,32 @@ function readPackageVersion(): string {
   }
 }
 
+function readBasePath(): string {
+  const maybeBasePath = process.env.PAGES_BASE_PATH?.trim();
+
+  if (!maybeBasePath) {
+    return "/";
+  }
+
+  const normalizedLeadingSlash = maybeBasePath.startsWith("/")
+    ? maybeBasePath
+    : `/${maybeBasePath}`;
+
+  return normalizedLeadingSlash.endsWith("/")
+    ? normalizedLeadingSlash
+    : `${normalizedLeadingSlash}/`;
+}
+
 const buildInfo = {
   version: readPackageVersion(),
   commit: maybeReadGitCommit(),
   builtAt: new Date().toISOString(),
 };
 
+const basePath = readBasePath();
+
 export default defineConfig({
+  base: basePath,
   define: {
     "import.meta.env.VITE_APP_VERSION": JSON.stringify(buildInfo.version),
     "import.meta.env.VITE_GIT_COMMIT": JSON.stringify(buildInfo.commit),
