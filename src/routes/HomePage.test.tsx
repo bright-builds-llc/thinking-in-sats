@@ -1,9 +1,22 @@
 import { render } from "@solidjs/testing-library";
+import type { JSX } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { QuoteState } from "../domain/quoteCache";
 import type { BuildInfo } from "../services/buildInfo";
 import { HomePage } from "./HomePage";
+
+vi.mock("@solidjs/router", () => ({
+  A: (props: {
+    children?: JSX.Element;
+    class?: string;
+    href?: string;
+  }) => (
+    <a class={props.class} href={props.href}>
+      {props.children}
+    </a>
+  ),
+}));
 
 function mockMatchMedia(matches: boolean) {
   const matchMedia = vi.fn().mockImplementation((query: string) => ({
@@ -52,10 +65,9 @@ describe("HomePage", () => {
     mockMatchMedia(false);
 
     // Act
-    const { container } = render(
-      () => <HomePage quoteState={quoteState} buildInfo={buildInfo} />,
-      { location: "/" },
-    );
+    const { container } = render(() => (
+      <HomePage quoteState={quoteState} buildInfo={buildInfo} />
+    ));
 
     // Assert
     expect(container.querySelector(".timeline-item--left")).toBeInTheDocument();
@@ -68,10 +80,9 @@ describe("HomePage", () => {
     mockMatchMedia(true);
 
     // Act
-    const { container } = render(
-      () => <HomePage quoteState={quoteState} buildInfo={buildInfo} />,
-      { location: "/" },
-    );
+    const { container } = render(() => (
+      <HomePage quoteState={quoteState} buildInfo={buildInfo} />
+    ));
 
     // Assert
     expect(container.querySelector(".timeline-item--center")).toBeInTheDocument();
