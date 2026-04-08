@@ -69,6 +69,20 @@ export function QuizPage(props: QuizPageProps) {
     return createQuizQuestion(currentItem);
   });
 
+  const maybeQuizView = createMemo(() => {
+    const currentItem = maybeCurrentItem();
+    const question = maybeQuestion();
+
+    if (!currentItem || !question) {
+      return null;
+    }
+
+    return {
+      currentItem,
+      question,
+    };
+  });
+
   const maybeResult = createMemo<QuizQuestionResult | null>(() => {
     const question = maybeQuestion();
     const maybeSelectedChoiceIdValue = maybeSelectedChoiceId();
@@ -111,7 +125,8 @@ export function QuizPage(props: QuizPageProps) {
       </div>
 
       <Show
-        when={maybeCurrentItem() && maybeQuestion()}
+        when={maybeQuizView()}
+        keyed
         fallback={
           <div class="surface-card">
             <p class="lede">
@@ -121,56 +136,51 @@ export function QuizPage(props: QuizPageProps) {
           </div>
         }
       >
-        {(() => {
-          const currentItem = maybeCurrentItem() as EverydayItemWithSats;
-          const question = maybeQuestion()!;
+        {(quizView) => (
+          <div class="quiz-layout">
+            <QuizCard item={quizView.currentItem} />
 
-          return (
-            <div class="quiz-layout">
-              <QuizCard item={currentItem} />
+            <div class="surface-card quiz-panel">
+              <div class="quiz-panel__header">
+                <span class="stat-chip">Question #{questionIndex() + 1}</span>
+                <span class="stat-chip">
+                  Best guess near {formatSatLabel(quizView.question.correctChoiceSatAmount)}
+                </span>
+              </div>
 
-              <div class="surface-card quiz-panel">
-                <div class="quiz-panel__header">
-                  <span class="stat-chip">Question #{questionIndex() + 1}</span>
-                  <span class="stat-chip">
-                    Best guess near {formatSatLabel(question.correctChoiceSatAmount)}
-                  </span>
-                </div>
+              <QuizChoices
+                choices={quizView.question.choices}
+                hasAnswered={Boolean(maybeResult())}
+                selectedChoiceId={maybeSelectedChoiceId()}
+                onSelect={handleChoiceSelect}
+              />
 
-                <QuizChoices
-                  choices={question.choices}
-                  hasAnswered={Boolean(maybeResult())}
-                  selectedChoiceId={maybeSelectedChoiceId()}
-                  onSelect={handleChoiceSelect}
-                />
+              <QuizFeedback
+                isVisible={Boolean(maybeResult())}
+                isCorrect={maybeResult()?.isCorrect ?? false}
+                explanation={`This item lands near ${formatSatLabel(
+                  quizView.question.correctChoiceSatAmount,
+                )}, or ${formatBtcValue(
+                  quizView.question.correctChoiceSatAmount,
+                )} BTC.`}
+                extraLine={`Approximate USD anchor: ${formatApproxUsd(
+                  quizView.currentItem.approxUsdCents,
+                )}.`}
+              />
 
-                    <QuizFeedback
-                      isVisible={Boolean(maybeResult())}
-                      isCorrect={maybeResult()?.isCorrect ?? false}
-                      explanation={`This item lands near ${formatSatLabel(
-                        question.correctChoiceSatAmount,
-                      )}, or ${formatBtcValue(
-                        question.correctChoiceSatAmount,
-                      )} BTC.`}
-                      extraLine={`Approximate USD anchor: ${formatApproxUsd(
-                        currentItem.approxUsdCents,
-                      )}.`}
-                    />
-
-                <div class="quiz-panel__actions">
-                  <button
-                    class="primary-button"
-                    type="button"
-                    disabled={!maybeResult()}
-                    onClick={handleNextQuestion}
-                  >
-                    Next item
-                  </button>
-                </div>
+              <div class="quiz-panel__actions">
+                <button
+                  class="primary-button"
+                  type="button"
+                  disabled={!maybeResult()}
+                  onClick={handleNextQuestion}
+                >
+                  Next item
+                </button>
               </div>
             </div>
-          );
-        })()}
+          </div>
+        )}
       </Show>
     </section>
   );
