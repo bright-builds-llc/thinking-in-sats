@@ -1,4 +1,4 @@
-import { Show, batch, createMemo, createSignal } from "solid-js";
+import { Show, batch, createEffect, createMemo, createSignal, on } from "solid-js";
 
 import { QuizCard } from "../components/quiz/QuizCard";
 import { QuizChoices } from "../components/quiz/QuizChoices";
@@ -26,7 +26,46 @@ type QuizPageProps = {
   quoteState: QuoteState;
 };
 
+const QUESTION_CARD_SCROLL_GAP_PX = 16;
+
+function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+    return false;
+  }
+
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function scrollQuestionCardIntoView(
+  maybeQuizLayoutElement: HTMLDivElement | undefined,
+) {
+  if (typeof window === "undefined" || !maybeQuizLayoutElement) {
+    return;
+  }
+
+  const headerHeight =
+    document
+      .querySelector<HTMLElement>(".site-header")
+      ?.getBoundingClientRect().height ?? 0;
+  const quizLayoutTop =
+    window.scrollY + maybeQuizLayoutElement.getBoundingClientRect().top;
+  const targetScrollTop = Math.max(
+    quizLayoutTop - headerHeight - QUESTION_CARD_SCROLL_GAP_PX,
+    0,
+  );
+
+  if (window.scrollY <= targetScrollTop + QUESTION_CARD_SCROLL_GAP_PX) {
+    return;
+  }
+
+  window.scrollTo({
+    top: targetScrollTop,
+    behavior: prefersReducedMotion() ? "auto" : "smooth",
+  });
+}
+
 export function QuizPage(props: QuizPageProps) {
+  let maybeQuizLayoutElement: HTMLDivElement | undefined;
   const [questionIndex, setQuestionIndex] = createSignal(0);
   const [maybePreviousItemId, setMaybePreviousItemId] = createSignal<
     string | undefined
@@ -102,6 +141,24 @@ export function QuizPage(props: QuizPageProps) {
     return evaluateQuizAnswer(question, maybeSelectedChoiceIdValue);
   });
 
+  createEffect(
+    on(
+      maybeCurrentItem,
+      (currentItem, maybePreviousItem) => {
+        if (
+          !currentItem ||
+          !maybePreviousItem ||
+          currentItem.id === maybePreviousItem.id
+        ) {
+          return;
+        }
+
+        scrollQuestionCardIntoView(maybeQuizLayoutElement);
+      },
+      { defer: true },
+    ),
+  );
+
   const handleChoiceSelect = (choiceId: string) => {
     if (maybeResult()) {
       return;
@@ -148,7 +205,7 @@ export function QuizPage(props: QuizPageProps) {
         }
       >
         {(quizView) => (
-          <div class="quiz-layout">
+          <div class="quiz-layout" ref={maybeQuizLayoutElement}>
             <QuizCard item={quizView.currentItem} />
 
             <div class="surface-card quiz-panel">

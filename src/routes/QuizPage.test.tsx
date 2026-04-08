@@ -1,6 +1,6 @@
 import { render, screen, within } from "@solidjs/testing-library";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { EverydayItem } from "../domain/itemTypes";
 import type { QuoteState } from "../domain/quoteCache";
@@ -36,7 +36,30 @@ const quoteState: QuoteState = {
   isStale: false,
 };
 
+function createRect(top: number, height = 0): DOMRect {
+  return {
+    bottom: top + height,
+    height,
+    left: 0,
+    right: 0,
+    top,
+    width: 0,
+    x: 0,
+    y: top,
+    toJSON: () => ({}),
+  } as DOMRect;
+}
+
 describe("QuizPage", () => {
+  afterEach(() => {
+    Object.defineProperty(window, "scrollY", {
+      configurable: true,
+      value: 0,
+      writable: true,
+    });
+    vi.restoreAllMocks();
+  });
+
   it("advances to the next item after the learner answers", async () => {
     // Arrange
     const user = userEvent.setup();
@@ -60,5 +83,45 @@ describe("QuizPage", () => {
       screen.queryByRole("heading", { level: 2, name: "Lunch" }),
     ).not.toBeInTheDocument();
     expect(screen.getByText("Question #2")).toBeInTheDocument();
+  });
+
+  it("smoothly scrolls back to the question card after advancing", async () => {
+    // Arrange
+    const user = userEvent.setup();
+    Object.defineProperty(window, "scrollY", {
+      configurable: true,
+      value: 480,
+      writable: true,
+    });
+    const scrollToSpy = vi
+      .spyOn(window, "scrollTo")
+      .mockImplementation(() => undefined);
+    vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(
+      function mockGetBoundingClientRect() {
+        if (this.classList.contains("quiz-layout")) {
+          return createRect(-180, 320);
+        }
+
+        return createRect(0, 0);
+      },
+    );
+
+    render(() => <QuizPage items={items} quoteState={quoteState} />);
+    const choiceButtons = within(
+      screen.getByRole("list", { name: "Quiz answer choices" }),
+    ).getAllByRole("button");
+    await user.click(choiceButtons[0]!);
+
+    // Act
+    await user.click(screen.getByRole("button", { name: "Next item" }));
+
+    // Assert
+    expect(
+      await screen.findByRole("heading", { level: 2, name: "Coffee" }),
+    ).toBeInTheDocument();
+    expect(scrollToSpy).toHaveBeenCalledWith({
+      behavior: "smooth",
+      top: 284,
+    });
   });
 });
