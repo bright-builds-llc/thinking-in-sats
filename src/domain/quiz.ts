@@ -100,7 +100,7 @@ function maybeBuildChoiceValuesForRank(
   const choiceValues = [
     ...new Set(
       choiceFactorsByRank[correctChoiceRank].map((factor) =>
-        roundToTeachingValue(correctSats * factor),
+        Math.max(1, roundToTeachingValue(correctSats * factor)),
       ),
     ),
   ].sort((left, right) => left - right);
