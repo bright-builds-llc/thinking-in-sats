@@ -11,9 +11,9 @@ type AppShellProps = {
  */
 export function AppShell(props: AppShellProps) {
   return (
-    <div class="app-shell">
+    <div class="site-shell">
       <SiteHeader />
-      <main class="app-main">{props.children}</main>
+      <main class="site-main">{props.children}</main>
       <SiteFooter />
     </div>
   );
