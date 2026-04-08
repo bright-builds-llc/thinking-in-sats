@@ -8,9 +8,11 @@
   --color-surface-border: rgba(255, 190, 124, 0.14);
   --color-surface-border-strong: rgba(255, 190, 124, 0.24);
   --color-text: #f7f1ea;
+  --color-text-secondary: #decec1;
   --color-text-muted: #cfbba8;
   --color-text-soft: #9f8f82;
   --color-accent: #ff9c52;
+  --color-accent-strong: #ff7d2d;
   --color-accent-soft: #ffb97c;
   --color-accent-glow: rgba(255, 156, 82, 0.24);
   --color-positive: #b8ffcb;
@@ -18,6 +20,18 @@
   --color-line: rgba(255, 190, 124, 0.25);
   --color-line-strong: rgba(255, 190, 124, 0.5);
   --color-focus: #ffd3ab;
+  --color-bg-canvas: var(--color-background);
+  --color-bg-deep: #090604;
+  --color-surface-elevated: rgba(38, 28, 21, 0.96);
+  --color-surface-muted: rgba(25, 18, 13, 0.94);
+  --color-border-subtle: var(--color-surface-border);
+  --color-border-strong: var(--color-surface-border-strong);
+  --color-text-primary: var(--color-text);
+  --color-focus-ring: var(--color-focus);
+
+  --shadow-soft:
+    0 18px 44px rgba(0, 0, 0, 0.28),
+    0 4px 12px rgba(0, 0, 0, 0.18);
 
   --shadow-card:
     0 22px 56px rgba(0, 0, 0, 0.34),

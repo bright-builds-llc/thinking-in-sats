@@ -70,12 +70,13 @@ describe("HomePage", () => {
     ));
 
     // Assert
+    expect(container.querySelector(".timeline-mobile-list")).not.toBeInTheDocument();
     expect(container.querySelector(".timeline-item--left")).toBeInTheDocument();
     expect(container.querySelector(".timeline-item--right")).toBeInTheDocument();
     expect(container.querySelector(".timeline-item--center")).not.toBeInTheDocument();
   });
 
-  it("switches the timeline into the mobile lane at the mobile breakpoint", () => {
+  it("switches the timeline into a stacked mobile list at the mobile breakpoint", () => {
     // Arrange
     mockMatchMedia(true);
 
@@ -85,6 +86,8 @@ describe("HomePage", () => {
     ));
 
     // Assert
+    expect(container.querySelector(".timeline-mobile-list")).toBeInTheDocument();
+    expect(container.querySelector(".timeline-stage")).not.toBeInTheDocument();
     expect(container.querySelector(".timeline-item--center")).toBeInTheDocument();
     expect(container.querySelector(".timeline-item--left")).not.toBeInTheDocument();
     expect(container.querySelector(".timeline-item--right")).not.toBeInTheDocument();

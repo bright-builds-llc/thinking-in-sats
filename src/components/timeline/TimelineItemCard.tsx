@@ -1,24 +1,35 @@
+import { Show } from "solid-js";
+
 import { formatBtcAmount, formatMoneyUsd, formatSats } from "../../domain/formatting";
 import type { TimelinePlacement } from "../../domain/itemTypes";
 import { UsdRevealPopover } from "./UsdRevealPopover";
 
 type TimelineItemCardProps = {
   placement: TimelinePlacement;
+  isMobileList?: boolean;
 };
 
 export function TimelineItemCard(props: TimelineItemCardProps) {
   const connectorAnchorPercent = () =>
     `${(props.placement.exactPosition - props.placement.displayPosition) * 100 + 50}%`;
+  const cardClassName = () =>
+    `timeline-item timeline-item--${props.placement.lane}${props.isMobileList ? " timeline-item--list" : ""}`;
+  const maybeStyle = () => {
+    if (props.isMobileList) {
+      return undefined;
+    }
+
+    return {
+      top: `${props.placement.displayPosition * 100}%`,
+      "--connector-anchor": connectorAnchorPercent(),
+    };
+  };
 
   return (
-    <article
-      class={`timeline-item timeline-item--${props.placement.lane}`}
-      style={{
-        top: `${props.placement.displayPosition * 100}%`,
-        "--connector-anchor": connectorAnchorPercent(),
-      }}
-    >
-      <div class="timeline-item__connector" aria-hidden="true" />
+    <article class={cardClassName()} style={maybeStyle()}>
+      <Show when={!props.isMobileList}>
+        <div class="timeline-item__connector" aria-hidden="true" />
+      </Show>
       <div class="timeline-card">
         <div class="timeline-card__header">
           <div>

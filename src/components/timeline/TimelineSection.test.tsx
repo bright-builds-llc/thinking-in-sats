@@ -79,4 +79,29 @@ describe("TimelineSection", () => {
     expect(container.querySelector(".timeline-item--left")).not.toBeInTheDocument();
     expect(container.querySelector(".timeline-item--right")).not.toBeInTheDocument();
   });
+
+  it("renders a stacked list shell in mobile mode", () => {
+    // Arrange
+    const items = [
+      createTimelineItem("coffee", 100),
+      createTimelineItem("lunch", 1_000),
+      createTimelineItem("groceries", 10_000),
+    ];
+
+    // Act
+    const { container } = render(() => (
+      <TimelineSection
+        items={items}
+        maybeCurrentQuoteLabel="$100,000"
+        maybeSatsPerDollarLabel="1,000 sats"
+        isMobileLayout
+      />
+    ));
+
+    // Assert
+    expect(container.querySelector(".timeline-mobile-list")).toBeInTheDocument();
+    expect(container.querySelector(".timeline-stage")).not.toBeInTheDocument();
+    expect(container.querySelector(".timeline-item__connector")).not.toBeInTheDocument();
+    expect(container.querySelectorAll(".timeline-item--list")).toHaveLength(3);
+  });
 });
