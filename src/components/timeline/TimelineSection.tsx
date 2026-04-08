@@ -46,17 +46,21 @@ export function TimelineSection(props: TimelineSectionProps) {
         </article>
       </div>
 
-      <div
-        class="timeline-scroll"
-        style={{
-          "--timeline-decades": `${Math.max(1, marks().length)}`,
-        }}
-      >
-        <div class="timeline-spine" aria-hidden="true" />
-        <TimelineScale markers={marks()} />
-        <For each={placements()}>
-          {(placement) => <TimelineItemCard placement={placement} />}
-        </For>
+      <div class="timeline-panel">
+        <div class="timeline-scroll-shell">
+          <div
+            class="timeline-scroll timeline-stage"
+            style={{
+              "--timeline-decades": `${Math.max(1, marks().length)}`,
+            }}
+          >
+            <div class="timeline-spine" aria-hidden="true" />
+            <TimelineScale markers={marks()} />
+            <For each={placements()}>
+              {(placement) => <TimelineItemCard placement={placement} />}
+            </For>
+          </div>
+        </div>
       </div>
     </section>
   );

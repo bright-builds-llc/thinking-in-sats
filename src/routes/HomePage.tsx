@@ -12,6 +12,7 @@ import {
   formatUsdPerBitcoin,
 } from "../domain/formatting";
 import { deriveItemsWithSats, usdCentsToSats } from "../domain/pricing";
+import { createMediaQuery } from "../primitives/createMediaQuery";
 import type { BuildInfo } from "../services/buildInfo";
 import type { QuoteState } from "../domain/quoteCache";
 
@@ -21,6 +22,7 @@ type HomePageProps = {
 };
 
 export function HomePage(props: HomePageProps) {
+  const isMobileTimeline = createMediaQuery("(max-width: 70rem)");
   const maybeQuote = createMemo(() => props.quoteState.currentQuote);
   const featuredItemsWithSats = createMemo(() => {
     const quote = maybeQuote();
@@ -42,7 +44,7 @@ export function HomePage(props: HomePageProps) {
   });
 
   return (
-    <div class="page-stack">
+    <div class="page">
       <section class="hero-grid">
         <div class="hero-copy">
           <span class="eyebrow">A sats-first way to think about value</span>
@@ -230,7 +232,7 @@ export function HomePage(props: HomePageProps) {
               maybeSatsPerDollarLabel={formatSatLabel(
                 usdCentsToSats(100, quote().usdPerBitcoin),
               )}
-              isMobileLayout={false}
+              isMobileLayout={isMobileTimeline()}
             />
           )}
         </Show>

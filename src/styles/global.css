@@ -117,7 +117,8 @@ svg {
 }
 
 .nav-link:hover,
-.nav-link[aria-current="page"] {
+.nav-link[aria-current="page"],
+.nav-link--active {
   border-color: rgb(255 158 92 / 0.45);
   color: var(--color-text-primary);
   background: rgb(255 142 77 / 0.08);
@@ -324,6 +325,12 @@ svg {
   min-width: 100%;
 }
 
+.timeline-scroll {
+  position: relative;
+  min-height: max(44rem, calc(7.5rem * var(--timeline-decades, 8)));
+  padding-bottom: 10rem;
+}
+
 .timeline-spine {
   position: absolute;
   left: 50%;
@@ -386,6 +393,12 @@ svg {
   padding-left: 1.5rem;
 }
 
+.timeline-item--center {
+  right: 0;
+  padding-left: 1.5rem;
+  justify-items: start;
+}
+
 .timeline-item__connector {
   position: absolute;
   top: calc(var(--connector-anchor, 50%) - 1px);
@@ -399,6 +412,10 @@ svg {
 }
 
 .timeline-item--right .timeline-item__connector {
+  left: 0;
+}
+
+.timeline-item--center .timeline-item__connector {
   left: 0;
 }
 
@@ -637,6 +654,7 @@ svg {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
   min-height: 3.3rem;
   border-radius: 1rem;
@@ -644,6 +662,7 @@ svg {
   background: rgb(14 14 19 / 0.78);
   padding: 0.85rem 1rem;
   color: var(--color-text-primary);
+  text-align: left;
 }
 
 .quiz-choice:hover {
@@ -661,12 +680,14 @@ svg {
 }
 
 .quiz-choice__label {
+  min-width: 0;
   font-size: 1.05rem;
   font-weight: 700;
 }
 
 .quiz-choice__btc,
 .quiz-choice__hint {
+  min-width: 0;
   color: var(--color-text-secondary);
   font-size: 0.9rem;
 }
@@ -769,7 +790,7 @@ svg {
   .hero-grid,
   .quiz-layout,
   .timeline-help,
-  .build-info__grid {
+  .build-info-grid {
     grid-template-columns: 1fr;
   }
 
@@ -786,12 +807,14 @@ svg {
   }
 
   .timeline-item--left,
-  .timeline-item--right {
+  .timeline-item--right,
+  .timeline-item--center {
     justify-items: start;
   }
 
   .timeline-item--left .timeline-item__connector,
-  .timeline-item--right .timeline-item__connector {
+  .timeline-item--right .timeline-item__connector,
+  .timeline-item--center .timeline-item__connector {
     left: 0;
     right: auto;
   }
@@ -839,6 +862,11 @@ svg {
   .site-nav > * {
     flex: 1 1 auto;
     justify-content: center;
+  }
+
+  .quiz-choice {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .timeline-item {
