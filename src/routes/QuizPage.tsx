@@ -1,4 +1,4 @@
-import { Show, createMemo, createSignal } from "solid-js";
+import { Show, batch, createMemo, createSignal } from "solid-js";
 
 import { QuizCard } from "../components/quiz/QuizCard";
 import { QuizChoices } from "../components/quiz/QuizChoices";
@@ -91,6 +91,14 @@ export function QuizPage(props: QuizPageProps) {
       return null;
     }
 
+    const hasSelectedChoice = question.choices.some(
+      (choice) => choice.id === maybeSelectedChoiceIdValue,
+    );
+
+    if (!hasSelectedChoice) {
+      return null;
+    }
+
     return evaluateQuizAnswer(question, maybeSelectedChoiceIdValue);
   });
 
@@ -105,12 +113,15 @@ export function QuizPage(props: QuizPageProps) {
   const handleNextQuestion = () => {
     const currentItem = maybeCurrentItem();
 
-    if (currentItem) {
-      setMaybePreviousItemId(currentItem.id);
-    }
+    batch(() => {
+      setMaybeSelectedChoiceId(null);
 
-    setQuestionIndex((currentValue) => currentValue + 1);
-    setMaybeSelectedChoiceId(null);
+      if (currentItem) {
+        setMaybePreviousItemId(currentItem.id);
+      }
+
+      setQuestionIndex((currentValue) => currentValue + 1);
+    });
   };
 
   return (
