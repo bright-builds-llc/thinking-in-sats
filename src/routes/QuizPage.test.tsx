@@ -64,6 +64,15 @@ describe("QuizPage", () => {
     vi.restoreAllMocks();
   });
 
+  it("does not reveal the target sats amount before the learner answers", () => {
+    // Arrange
+    render(() => <QuizPage items={items} quoteState={quoteState} />);
+
+    // Assert
+    expect(screen.getByText("Any rank can be right")).toBeInTheDocument();
+    expect(screen.queryByText(/Best guess near/i)).not.toBeInTheDocument();
+  });
+
   it("advances to the next item after the learner answers", async () => {
     // Arrange
     const user = userEvent.setup();
