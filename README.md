@@ -79,7 +79,9 @@ make debugging and release verification easier.
 | UI framework | SolidJS |
 | Routing | `@solidjs/router` with `HashRouter` |
 | Build tool | Vite |
+| Visual components | Mystic UI |
 | UI primitives | Kobalte |
+| Styling | Tailwind CSS plus local semantic CSS |
 | Test runner | Vitest with jsdom |
 | Linting | ESLint |
 | Package manager / task runner | Bun |

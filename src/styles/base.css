@@ -28,7 +28,8 @@ body {
   margin: 0;
   min-width: 320px;
   background:
-    radial-gradient(circle at top, rgb(255 145 77 / 0.14), transparent 30%),
+    radial-gradient(circle at 18% 0%, rgb(125 211 252 / 0.16), transparent 28%),
+    radial-gradient(circle at 88% 12%, rgb(255 145 77 / 0.13), transparent 26%),
     linear-gradient(180deg, var(--color-bg-canvas), var(--color-bg-deep));
   color: var(--color-text-primary);
 }

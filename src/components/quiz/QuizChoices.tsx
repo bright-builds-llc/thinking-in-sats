@@ -1,5 +1,6 @@
 import { For } from "solid-js";
 
+import { MysticRippleButton } from "../mystic/MysticVisual";
 import type { QuizChoiceView } from "../../domain/itemTypes";
 
 type QuizChoicesProps = {
@@ -32,7 +33,7 @@ export function QuizChoices(props: QuizChoicesProps) {
           };
 
           return (
-            <button
+            <MysticRippleButton
               type="button"
               class={`quiz-choice${isSelected() ? " quiz-choice--selected" : ""}${stateClass()}`}
               onClick={() => props.onSelect(choice.id)}
@@ -40,7 +41,7 @@ export function QuizChoices(props: QuizChoicesProps) {
             >
               <span class="quiz-choice__label">{choice.label}</span>
               <span class="quiz-choice__hint">{choice.supportingText}</span>
-            </button>
+            </MysticRippleButton>
           );
         }}
       </For>

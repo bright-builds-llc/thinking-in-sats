@@ -1,29 +1,32 @@
 :root {
   color-scheme: dark;
 
-  --color-background: #120d09;
-  --color-background-elevated: #1b1510;
-  --color-background-card: rgba(34, 24, 18, 0.92);
-  --color-background-soft: rgba(255, 255, 255, 0.03);
-  --color-surface-border: rgba(255, 190, 124, 0.14);
-  --color-surface-border-strong: rgba(255, 190, 124, 0.24);
-  --color-text: #f7f1ea;
-  --color-text-secondary: #decec1;
-  --color-text-muted: #cfbba8;
-  --color-text-soft: #9f8f82;
+  --color-background: #0b1018;
+  --color-background-elevated: #101823;
+  --color-background-card: rgba(17, 25, 36, 0.92);
+  --color-background-soft: rgba(125, 211, 252, 0.05);
+  --color-surface-border: rgba(125, 211, 252, 0.16);
+  --color-surface-border-strong: rgba(255, 211, 171, 0.28);
+  --color-text: #f8fbff;
+  --color-text-secondary: #d6e3ee;
+  --color-text-muted: #a9bdca;
+  --color-text-soft: #8397a6;
   --color-accent: #ff9c52;
   --color-accent-strong: #ff7d2d;
   --color-accent-soft: #ffb97c;
   --color-accent-glow: rgba(255, 156, 82, 0.24);
+  --color-accent-cool: #7dd3fc;
+  --color-accent-cool-soft: #b7e8ff;
+  --color-accent-violet: #c4b5fd;
   --color-positive: #b8ffcb;
   --color-negative: #ffb19a;
-  --color-line: rgba(255, 190, 124, 0.25);
+  --color-line: rgba(125, 211, 252, 0.22);
   --color-line-strong: rgba(255, 190, 124, 0.5);
-  --color-focus: #ffd3ab;
+  --color-focus: #b7e8ff;
   --color-bg-canvas: var(--color-background);
-  --color-bg-deep: #090604;
-  --color-surface-elevated: rgba(38, 28, 21, 0.96);
-  --color-surface-muted: rgba(25, 18, 13, 0.94);
+  --color-bg-deep: #05080d;
+  --color-surface-elevated: rgba(21, 31, 44, 0.96);
+  --color-surface-muted: rgba(12, 18, 27, 0.94);
   --color-border-subtle: var(--color-surface-border);
   --color-border-strong: var(--color-surface-border-strong);
   --color-text-primary: var(--color-text);
@@ -44,9 +47,9 @@
     "IBM Plex Mono", "SFMono-Regular", ui-monospace, SFMono-Regular, Menlo,
     monospace;
 
-  --radius-card: 24px;
+  --radius-card: 8px;
   --radius-pill: 999px;
-  --radius-small: 14px;
+  --radius-small: 8px;
 
   --content-width: min(1120px, calc(100vw - 2rem));
   --spine-width: 2px;

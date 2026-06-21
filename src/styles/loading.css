@@ -10,6 +10,7 @@
   justify-items: center;
   width: min(100%, 30rem);
   padding: 2rem;
+  border-radius: var(--radius-card);
   text-align: center;
 }
 
@@ -17,8 +18,8 @@
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
-  border: 3px solid rgb(255 149 84 / 0.16);
-  border-top-color: var(--color-accent);
+  border: 3px solid rgb(125 211 252 / 0.16);
+  border-top-color: var(--color-accent-cool);
   animation: spin 950ms linear infinite;
 }
 

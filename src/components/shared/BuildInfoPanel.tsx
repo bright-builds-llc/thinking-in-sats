@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 
+import { MysticSurface } from "../mystic/MysticVisual";
 import {
   buildInfoSummary,
   type BuildInfo,
@@ -27,7 +28,12 @@ export function BuildInfoPanel(props: BuildInfoPanelProps) {
   };
 
   return (
-    <section class="build-info-panel" aria-label="Build information">
+    <MysticSurface
+      ariaLabel="Build information"
+      as="section"
+      beam
+      class="build-info-panel"
+    >
       <div>
         <p class="eyebrow">Build provenance</p>
         <h2>What version are you looking at?</h2>
@@ -51,6 +57,6 @@ export function BuildInfoPanel(props: BuildInfoPanelProps) {
       <button class="ghost-button" type="button" onClick={handleCopyClick}>
         {copyLabel()}
       </button>
-    </section>
+    </MysticSurface>
   );
 }

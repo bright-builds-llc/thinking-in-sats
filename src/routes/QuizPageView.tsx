@@ -1,3 +1,8 @@
+import {
+  MysticActionButton,
+  MysticGradientText,
+  MysticSurface,
+} from "../components/mystic/MysticVisual";
 import { QuizCard } from "../components/quiz/QuizCard";
 import { QuizChoices } from "../components/quiz/QuizChoices";
 import { QuizFeedback } from "../components/quiz/QuizFeedback";
@@ -31,7 +36,9 @@ export function QuizPageIntro() {
   return (
     <div class="section-heading">
       <span class="eyebrow">Quiz</span>
-      <h1>Train your sats intuition</h1>
+      <h1>
+        Train your <MysticGradientText>sats intuition</MysticGradientText>
+      </h1>
       <p class="lede">
         Each question uses wide power-of-ten choices so you can focus on
         building rough mental models before you think about dollars.
@@ -42,11 +49,11 @@ export function QuizPageIntro() {
 
 export function QuizQuoteFallback() {
   return (
-    <div class="surface-card">
+    <MysticSurface class="surface-card">
       <p class="lede">
         We need a live BTC/USD quote before we can turn quiz items into sats.
       </p>
-    </div>
+    </MysticSurface>
   );
 }
 
@@ -55,7 +62,7 @@ export function QuizQuestionLayout(props: QuizQuestionLayoutProps) {
     <div class="quiz-layout" ref={props.onQuizLayoutRef}>
       <QuizCard item={props.quizView.currentItem} />
 
-      <div class="surface-card quiz-panel">
+      <MysticSurface beam class="surface-card quiz-panel">
         <div class="quiz-panel__header">
           <span class="stat-chip">Question #{props.questionIndex + 1}</span>
           <span class="stat-chip">Any rank can be right</span>
@@ -82,16 +89,16 @@ export function QuizQuestionLayout(props: QuizQuestionLayoutProps) {
         />
 
         <div class="quiz-panel__actions">
-          <button
+          <MysticActionButton
             class="primary-button"
             type="button"
             disabled={!props.maybeResult}
             onClick={() => props.onNextQuestion()}
           >
             Next item
-          </button>
+          </MysticActionButton>
         </div>
-      </div>
+      </MysticSurface>
     </div>
   );
 }

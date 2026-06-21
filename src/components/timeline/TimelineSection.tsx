@@ -1,5 +1,10 @@
 import { For, Show, createMemo } from "solid-js";
 
+import {
+  MysticGridBackdrop,
+  MysticNumberTicker,
+  MysticSurface,
+} from "../mystic/MysticVisual";
 import { buildTimelineMarks, buildTimelinePlacements } from "../../domain/timelineLayout";
 import type { EverydayItemWithSats } from "../../domain/itemTypes";
 import { TimelineItemCard } from "./TimelineItemCard";
@@ -9,8 +14,13 @@ type TimelineSectionProps = {
   items: EverydayItemWithSats[];
   maybeCurrentQuoteLabel: string;
   maybeSatsPerDollarLabel: string;
+  maybeSatsPerDollarValue?: number;
   isMobileLayout?: boolean;
 };
+
+const wholeNumberFormatter = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 0,
+});
 
 export function TimelineSection(props: TimelineSectionProps) {
   const placements = createMemo(() =>
@@ -37,21 +47,41 @@ export function TimelineSection(props: TimelineSectionProps) {
   return (
     <section class="timeline-section">
       <div class="timeline-help">
-        <article class="surface-card">
+        <MysticSurface as="article" class="surface-card timeline-stat-card">
           <h3>Current BTC anchor</h3>
           <p>{props.maybeCurrentQuoteLabel ?? "Unavailable"}</p>
-        </article>
-        <article class="surface-card">
+        </MysticSurface>
+        <MysticSurface as="article" class="surface-card timeline-stat-card">
           <h3>1 USD is roughly</h3>
-          <p>{props.maybeSatsPerDollarLabel ?? "Unavailable"}</p>
-        </article>
-        <article class="surface-card">
+          <p>
+            <Show
+              when={props.maybeSatsPerDollarValue}
+              fallback={props.maybeSatsPerDollarLabel ?? "Unavailable"}
+            >
+              {(satsPerDollarValue) => (
+                <>
+                  <MysticNumberTicker
+                    accessibleLabel={props.maybeSatsPerDollarLabel}
+                    class="timeline-stat-card__number"
+                    formattedValue={wholeNumberFormatter.format(
+                      satsPerDollarValue(),
+                    )}
+                    value={satsPerDollarValue()}
+                  />{" "}
+                  sats
+                </>
+              )}
+            </Show>
+          </p>
+        </MysticSurface>
+        <MysticSurface as="article" class="surface-card timeline-stat-card">
           <h3>Reading the line</h3>
           <p>{readingHelpCopy()}</p>
-        </article>
+        </MysticSurface>
       </div>
 
       <div class={`timeline-panel${props.isMobileLayout ? " timeline-panel--mobile" : ""}`}>
+        <MysticGridBackdrop class="timeline-panel__grid" density="dense" />
         <Show
           when={props.isMobileLayout}
           fallback={

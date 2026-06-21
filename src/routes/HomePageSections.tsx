@@ -1,6 +1,14 @@
 import { For, Show } from "solid-js";
 import { A } from "@solidjs/router";
 
+import {
+  MysticBentoGrid,
+  MysticGradientText,
+  MysticHighlight,
+  MysticNumberTicker,
+  MysticSurface,
+  MysticText,
+} from "../components/mystic/MysticVisual";
 import { LoadingState } from "../components/shared/LoadingState";
 import { TimelineSection } from "../components/timeline/TimelineSection";
 import { featuredEverydayItems, totalEverydayItemCount } from "../content/items";
@@ -28,11 +36,21 @@ type TimelineVisualizationProps = QuoteAwareSectionProps & {
   isMobileTimeline: boolean;
 };
 
+const wholeNumberFormatter = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 0,
+});
+
+function formatTickerNumber(value: number): string {
+  return wholeNumberFormatter.format(Math.round(value));
+}
+
 export function HomeHeroSection() {
   return (
-    <div class="hero-copy">
+    <MysticSurface beam class="hero-panel hero-copy" intensity="strong">
       <span class="eyebrow">A sats-first way to think about value</span>
-      <h1>Thinking In Sats</h1>
+      <h1>
+        <MysticGradientText>Thinking In Sats</MysticGradientText>
+      </h1>
       <p class="lede">
         Train your intuition by mapping everyday purchases onto a single
         logarithmic sats line. Learn the satoshi value first, then reveal the
@@ -50,13 +68,13 @@ export function HomeHeroSection() {
         <span class="stat-chip">{featuredEverydayItems.length} featured anchors</span>
         <span class="stat-chip">{totalEverydayItemCount} everyday items total</span>
       </div>
-    </div>
+    </MysticSurface>
   );
 }
 
 export function QuoteReferencePanel(props: QuoteReferencePanelProps) {
   return (
-    <div class="quote-panel">
+    <MysticSurface beam class="quote-panel" intensity="strong">
       <Show
         when={props.maybeQuote}
         fallback={
@@ -69,8 +87,20 @@ export function QuoteReferencePanel(props: QuoteReferencePanelProps) {
         {(quote) => (
           <>
             <h2>Live reference</h2>
-            <div class="quote-price">
-              {formatUsdPerBitcoin(quote().usdPerBitcoin)}
+            <div
+              aria-label={formatUsdPerBitcoin(quote().usdPerBitcoin)}
+              class="quote-price"
+            >
+              <span aria-hidden="true">$</span>
+              <MysticNumberTicker
+                accessibleLabel={formatUsdPerBitcoin(quote().usdPerBitcoin)}
+                class="quote-price__ticker"
+                formattedValue={formatTickerNumber(quote().usdPerBitcoin)}
+                value={quote().usdPerBitcoin}
+              />
+              <span class="quote-price__suffix" aria-hidden="true">
+                / BTC
+              </span>
             </div>
             <div class="quote-meta">
               <span>
@@ -93,44 +123,45 @@ export function QuoteReferencePanel(props: QuoteReferencePanelProps) {
           </>
         )}
       </Show>
-    </div>
+    </MysticSurface>
   );
 }
 
 export function TimelineExplainerSection() {
   return (
-    <section class="timeline-help">
-      <article class="surface-card">
+    <MysticBentoGrid class="timeline-help mystic-bento mystic-bento--compact">
+      <MysticSurface as="article" class="surface-card explainer-card">
         <h2>Why a logarithmic line?</h2>
         <p>
           Value jumps fast as you move from coffee money to rent money. A log
           scale lets tiny and large sat values live on the same vertical story
           without flattening the interesting middle.
         </p>
-      </article>
-      <article class="surface-card">
+      </MysticSurface>
+      <MysticSurface as="article" class="surface-card explainer-card">
         <h2>Why hide the dollars?</h2>
         <p>
           We want a tiny bit of friction. Read sats and BTC first, form an
-          intuition, then reveal the approximate USD anchor only when you need a
-          familiar reference.
+          intuition, then reveal the{" "}
+          <MysticHighlight>approximate USD anchor</MysticHighlight> only when
+          you need a familiar reference.
         </p>
-      </article>
-      <article class="surface-card">
+      </MysticSurface>
+      <MysticSurface as="article" class="surface-card explainer-card">
         <h2>How approximate are these prices?</h2>
         <p>
           These are intentionally broad US-centric estimates for everyday life.
           Prices vary by city, season, store, and personal preference, but the
           order of magnitude is the point.
         </p>
-      </article>
-    </section>
+      </MysticSurface>
+    </MysticBentoGrid>
   );
 }
 
 export function QuoteSummarySection(props: QuoteAwareSectionProps) {
   return (
-    <section class="surface-card">
+    <MysticSurface as="section" class="surface-card quote-summary-card">
       <Show
         when={props.maybeQuote}
         fallback={
@@ -161,21 +192,23 @@ export function QuoteSummarySection(props: QuoteAwareSectionProps) {
           </div>
         )}
       </Show>
-    </section>
+    </MysticSurface>
   );
 }
 
 export function QuickAnchorsSection(props: QuoteAwareSectionProps) {
   return (
-    <section class="surface-card">
+    <MysticSurface as="section" class="surface-card anchors-section" beam>
       <div class="section-heading">
         <span class="eyebrow">A few quick anchors</span>
-        <h2>From tiny spends to monthly bills</h2>
+        <h2>
+          From <MysticHighlight>tiny spends</MysticHighlight> to monthly bills
+        </h2>
       </div>
-      <div class="timeline-help">
+      <MysticBentoGrid class="timeline-help mystic-bento anchor-grid">
         <For each={featuredEverydayItems.slice(0, 6)}>
           {(item) => (
-            <article class="surface-card">
+            <MysticSurface as="article" class="surface-card anchor-card">
               <span class="eyebrow">{item.category}</span>
               <h3>{item.name}</h3>
               <Show when={props.maybeQuote}>
@@ -196,20 +229,27 @@ export function QuickAnchorsSection(props: QuoteAwareSectionProps) {
               <p class="quote-meta">
                 Approx. {centsToUsdString(item.approxUsdCents)}
               </p>
-            </article>
+            </MysticSurface>
           )}
         </For>
-      </div>
-    </section>
+      </MysticBentoGrid>
+    </MysticSurface>
   );
 }
 
 export function TimelineVisualizationSection(props: TimelineVisualizationProps) {
   return (
-    <section id="timeline" class="surface-card">
+    <MysticSurface
+      as="section"
+      beam
+      class="surface-card timeline-visual-card"
+      id="timeline"
+    >
       <div class="section-heading">
         <span class="eyebrow">Main visualization</span>
-        <h2>The vertical sats line</h2>
+        <h2>
+          The <MysticGradientText>vertical sats line</MysticGradientText>
+        </h2>
         <p class="quote-meta">
           Scroll from everyday pocket change all the way toward meaningful
           monthly commitments. Every item sits on a true logarithmic position,
@@ -232,20 +272,23 @@ export function TimelineVisualizationSection(props: TimelineVisualizationProps) 
             maybeSatsPerDollarLabel={formatSatLabel(
               usdCentsToSats(100, quote().usdPerBitcoin),
             )}
+            maybeSatsPerDollarValue={usdCentsToSats(100, quote().usdPerBitcoin)}
             isMobileLayout={props.isMobileTimeline}
           />
         )}
       </Show>
-    </section>
+    </MysticSurface>
   );
 }
 
 export function MethodSection() {
   return (
-    <section class="surface-card">
+    <MysticSurface as="section" class="surface-card method-card">
       <div class="section-heading">
         <span class="eyebrow">Method</span>
-        <h2>How to read the values</h2>
+        <MysticText as="h2" by="word">
+          How to read the values
+        </MysticText>
       </div>
       <ol class="quote-meta">
         <li>Start with the item name and its satoshi value.</li>
@@ -258,6 +301,6 @@ export function MethodSection() {
           approximate USD anchor.
         </li>
       </ol>
-    </section>
+    </MysticSurface>
   );
 }

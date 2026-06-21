@@ -1,5 +1,6 @@
 import { Show } from "solid-js";
 
+import { MysticSurface } from "../mystic/MysticVisual";
 import { formatBtcAmount, formatMoneyUsd, formatSats } from "../../domain/formatting";
 import type { TimelinePlacement } from "../../domain/itemTypes";
 import { UsdRevealPopover } from "./UsdRevealPopover";
@@ -26,11 +27,11 @@ export function TimelineItemCard(props: TimelineItemCardProps) {
   };
 
   return (
-    <article class={cardClassName()} style={maybeStyle()}>
+    <div class={cardClassName()} style={maybeStyle()}>
       <Show when={!props.isMobileList}>
         <div class="timeline-item__connector" aria-hidden="true" />
       </Show>
-      <div class="timeline-card">
+      <MysticSurface as="article" class="timeline-card">
         <div class="timeline-card__header">
           <div>
             <span class="timeline-card__category">
@@ -53,7 +54,7 @@ export function TimelineItemCard(props: TimelineItemCardProps) {
             approxUsdLabel={formatMoneyUsd(props.placement.item.approxUsdCents)}
           />
         </div>
-      </div>
-    </article>
+      </MysticSurface>
+    </div>
   );
 }

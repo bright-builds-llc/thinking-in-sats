@@ -1,3 +1,4 @@
+import { MysticGradientText, MysticSurface } from "../mystic/MysticVisual";
 import type { EverydayItemWithSats } from "../../domain/itemTypes";
 
 type QuizCardProps = {
@@ -6,9 +7,11 @@ type QuizCardProps = {
 
 export function QuizCard(props: QuizCardProps) {
   return (
-    <section class="surface-card quiz-card">
+    <MysticSurface as="section" beam class="surface-card quiz-card">
       <span class="eyebrow">Quick sats quiz</span>
-      <h2 class="quiz-card__name">{props.item.name}</h2>
+      <h2 class="quiz-card__name">
+        <MysticGradientText>{props.item.name}</MysticGradientText>
+      </h2>
       <p class="quiz-card__prompt">
         Which sats value feels closest to this everyday item?
       </p>
@@ -20,6 +23,6 @@ export function QuizCard(props: QuizCardProps) {
         The choices are intentionally spaced wide so you can think in rough
         orders of magnitude first.
       </p>
-    </section>
+    </MysticSurface>
   );
 }

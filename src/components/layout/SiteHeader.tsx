@@ -1,11 +1,12 @@
 import { A } from "@solidjs/router";
+import { MysticGradientText } from "../mystic/MysticVisual";
 
 export function SiteHeader() {
   return (
     <header class="site-header">
       <div class="brand-block">
         <A class="brand-title" href="/">
-          Thinking In Sats
+          <MysticGradientText>Thinking In Sats</MysticGradientText>
         </A>
         <p class="brand-subtitle">
           Learn everyday prices through satoshis first.

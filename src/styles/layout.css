@@ -1,7 +1,18 @@
 .site-shell {
+  position: relative;
+  isolation: isolate;
   width: min(100%, 80rem);
   margin: 0 auto;
   padding: 1.25rem;
+}
+
+.site-shell__grid {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.24;
+  color: var(--color-accent-cool);
+  mask-image: linear-gradient(180deg, black, transparent 82%);
 }
 
 .site-header {
@@ -25,7 +36,7 @@
   margin: 0;
   font-size: clamp(1.25rem, 3vw, 1.65rem);
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: 0;
 }
 
 .brand-subtitle {
@@ -61,7 +72,7 @@
 .nav-link--active {
   border-color: rgb(255 158 92 / 0.45);
   color: var(--color-text-primary);
-  background: rgb(255 142 77 / 0.08);
+  background: rgb(125 211 252 / 0.08);
 }
 
 .site-main {

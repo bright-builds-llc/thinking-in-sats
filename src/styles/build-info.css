@@ -1,6 +1,13 @@
 .build-info-panel {
   display: grid;
   gap: 1rem;
+  width: min(100%, 42rem);
+  padding: 1rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-card);
+  background:
+    linear-gradient(180deg, rgb(125 211 252 / 0.06), transparent),
+    var(--color-surface-muted);
 }
 
 .build-info-grid {
@@ -24,8 +31,8 @@
   justify-self: start;
   min-height: 2.5rem;
   padding: 0.7rem 1rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--color-border-strong);
-  background: transparent;
+  background: rgb(125 211 252 / 0.05);
   color: var(--color-text-primary);
 }

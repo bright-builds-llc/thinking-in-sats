@@ -56,6 +56,9 @@ export default defineConfig({
     "import.meta.env.VITE_BUILD_TIMESTAMP": JSON.stringify(buildInfo.builtAt),
   },
   plugins: [solid()],
+  optimizeDeps: {
+    exclude: ["mystic-ui"],
+  },
   server: {
     port: 4173,
   },
