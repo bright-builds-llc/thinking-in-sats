@@ -50,7 +50,7 @@
 
 .site-footer__link:hover {
   color: var(--color-text-primary);
-  background: rgb(255 156 82 / 0.06);
+  background: var(--color-background-soft);
 }
 
 .site-footer p {

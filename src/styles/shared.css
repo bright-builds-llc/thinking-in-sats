@@ -86,14 +86,19 @@
 }
 
 .secondary-button {
-  background: rgb(255 156 82 / 0.06);
-  border-color: var(--color-border-strong);
+  background: var(--color-background-soft);
+  border-color: var(--color-border-subtle);
   color: var(--color-text-primary);
 }
 
 .primary-button:hover,
 .secondary-button:hover {
   transform: translateY(-1px);
+}
+
+.secondary-button:hover {
+  border-color: rgb(255 156 82 / 0.34);
+  background: rgb(255 156 82 / 0.06);
 }
 
 .primary-button:disabled,
@@ -117,8 +122,8 @@
   min-height: 2.35rem;
   padding: 0.55rem 0.85rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgb(255 149 84 / 0.14), rgb(255 211 171 / 0.08));
-  border: 1px solid rgb(255 156 82 / 0.18);
+  background: var(--color-background-soft);
+  border: 1px solid var(--color-border-subtle);
   color: var(--color-text-primary);
   font-size: 0.95rem;
 }

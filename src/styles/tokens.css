@@ -1,12 +1,21 @@
-:root {
+:root,
+.dark {
   color-scheme: dark;
 
+  --background: 0 0% 2%;
+  --foreground: 0 0% 97%;
+  --primary: 0 0% 97%;
+  --primary-foreground: 0 0% 5%;
+  --accent: 0 0% 10%;
+  --accent-foreground: 0 0% 97%;
+  --input: 0 0% 14%;
+
   --color-background: #050505;
-  --color-background-elevated: #151515;
-  --color-background-card: rgba(18, 18, 18, 0.94);
-  --color-background-soft: rgba(255, 156, 82, 0.06);
-  --color-surface-border: rgba(255, 156, 82, 0.18);
-  --color-surface-border-strong: rgba(255, 211, 171, 0.28);
+  --color-background-elevated: #121212;
+  --color-background-card: rgb(18 18 18 / 0.98);
+  --color-background-soft: rgb(255 255 255 / 0.055);
+  --color-surface-border: rgb(255 255 255 / 0.1);
+  --color-surface-border-strong: rgb(255 255 255 / 0.18);
   --color-text: #f7f7f7;
   --color-text-secondary: #d8d8d8;
   --color-text-muted: #a6a6a6;
@@ -22,8 +31,8 @@
   --color-focus: #ffd3ab;
   --color-bg-canvas: var(--color-background);
   --color-bg-deep: #000000;
-  --color-surface-elevated: rgba(26, 26, 26, 0.96);
-  --color-surface-muted: rgba(13, 13, 13, 0.94);
+  --color-surface-elevated: rgb(24 24 24 / 0.98);
+  --color-surface-muted: rgb(12 12 12 / 0.98);
   --color-border-subtle: var(--color-surface-border);
   --color-border-strong: var(--color-surface-border-strong);
   --color-text-primary: var(--color-text);

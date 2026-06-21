@@ -1,8 +1,6 @@
 /* @refresh reload */
 import { render } from "solid-js/web";
 import App from "./App";
-import "./styles/mystic.css";
-import "./styles/tokens.css";
 import "./styles/global.css";
 
 const maybeRoot = document.getElementById("root");
