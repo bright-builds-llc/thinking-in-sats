@@ -1,43 +1,63 @@
 .build-info-panel {
-  display: grid;
-  gap: 1rem;
-  width: min(100%, 42rem);
-  padding: 1rem;
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-card);
-  background:
-    linear-gradient(180deg, rgb(255 156 82 / 0.06), transparent),
-    var(--color-surface-muted);
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  flex-wrap: wrap;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--color-border-subtle);
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+
+.build-info-label {
+  margin: 0;
+  color: var(--color-accent-soft);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
 .build-info-grid {
-  display: grid;
+  display: flex;
   gap: 0.75rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
+  margin: 0;
 }
 
 .build-info-grid div {
+  display: flex;
+  gap: 0.35rem;
+  align-items: baseline;
   min-width: 0;
 }
 
 .build-info-grid dt {
   color: var(--color-text-muted);
-  font-size: 0.82rem;
+  font-size: 0.74rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
 }
 
 .build-info-grid dd {
-  margin: 0.35rem 0 0;
+  margin: 0;
+  color: var(--color-text-secondary);
   overflow-wrap: anywhere;
 }
 
 .ghost-button {
-  justify-self: start;
-  min-height: 2.5rem;
-  padding: 0.7rem 1rem;
+  min-height: 2rem;
+  padding: 0.45rem 0.7rem;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border-strong);
-  background: rgb(255 156 82 / 0.06);
+  border: 1px solid var(--color-border-subtle);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+
+.ghost-button:hover {
+  border-color: var(--color-border-strong);
   color: var(--color-text-primary);
+  background: rgb(255 156 82 / 0.06);
 }

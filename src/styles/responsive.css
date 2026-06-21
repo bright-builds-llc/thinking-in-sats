@@ -1,8 +1,7 @@
 @media (max-width: 70rem) {
   .hero-grid,
   .quiz-layout,
-  .timeline-help,
-  .build-info-grid {
+  .timeline-help {
     grid-template-columns: 1fr;
   }
 
@@ -114,14 +113,21 @@
   }
 
   .hero-actions,
-  .site-nav {
+  .site-nav,
+  .site-footer__nav {
     width: 100%;
   }
 
   .hero-actions > *,
-  .site-nav > * {
+  .site-nav > *,
+  .site-footer__nav > * {
     flex: 1 1 auto;
     justify-content: center;
+  }
+
+  .build-info-panel {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .quiz-choice {

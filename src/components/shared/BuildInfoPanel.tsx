@@ -1,6 +1,5 @@
 import { createSignal } from "solid-js";
 
-import { MysticSurface } from "../mystic/MysticVisual";
 import {
   buildInfoSummary,
   type BuildInfo,
@@ -12,6 +11,13 @@ type BuildInfoPanelProps = {
 
 export function BuildInfoPanel(props: BuildInfoPanelProps) {
   const [copyLabel, setCopyLabel] = createSignal("Copy build summary");
+  const displayCommit = () => {
+    if (props.buildInfo.commit === "Unavailable") {
+      return props.buildInfo.commit;
+    }
+
+    return props.buildInfo.commit.slice(0, 8);
+  };
 
   const handleCopyClick = async () => {
     const summary = buildInfoSummary(props.buildInfo);
@@ -28,16 +34,8 @@ export function BuildInfoPanel(props: BuildInfoPanelProps) {
   };
 
   return (
-    <MysticSurface
-      ariaLabel="Build information"
-      as="section"
-      beam
-      class="build-info-panel"
-    >
-      <div>
-        <p class="eyebrow">Build provenance</p>
-        <h2>What version are you looking at?</h2>
-      </div>
+    <section aria-label="Build information" class="build-info-panel">
+      <p class="build-info-label">Build provenance</p>
 
       <dl class="build-info-grid">
         <div>
@@ -46,7 +44,7 @@ export function BuildInfoPanel(props: BuildInfoPanelProps) {
         </div>
         <div>
           <dt>Commit</dt>
-          <dd>{props.buildInfo.commit}</dd>
+          <dd title={props.buildInfo.commit}>{displayCommit()}</dd>
         </div>
         <div>
           <dt>Built</dt>
@@ -57,6 +55,6 @@ export function BuildInfoPanel(props: BuildInfoPanelProps) {
       <button class="ghost-button" type="button" onClick={handleCopyClick}>
         {copyLabel()}
       </button>
-    </MysticSurface>
+    </section>
   );
 }
