@@ -28,8 +28,4 @@ export function getBuildInfo(): BuildInfo {
   };
 }
 
-export function buildInfoSummary(buildInfo: BuildInfo): string {
-  return `version=${buildInfo.version} commit=${buildInfo.commit} builtAt=${buildInfo.builtAt}`;
-}
-
 export const buildInfo = getBuildInfo();

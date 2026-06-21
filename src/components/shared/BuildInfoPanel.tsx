@@ -1,42 +1,25 @@
-import { createSignal } from "solid-js";
+import type { BuildInfo } from "../../services/buildInfo";
 
-import {
-  buildInfoSummary,
-  type BuildInfo,
-} from "../../services/buildInfo";
+const repositoryUrl = "https://github.com/bright-builds-llc/thinking-in-sats";
+const unavailableValue = "Unavailable";
 
 type BuildInfoPanelProps = {
   buildInfo: BuildInfo;
 };
 
 export function BuildInfoPanel(props: BuildInfoPanelProps) {
-  const [copyLabel, setCopyLabel] = createSignal("Copy build summary");
+  const isCommitAvailable = () => props.buildInfo.commit !== unavailableValue;
   const displayCommit = () => {
-    if (props.buildInfo.commit === "Unavailable") {
+    if (!isCommitAvailable()) {
       return props.buildInfo.commit;
     }
 
     return props.buildInfo.commit.slice(0, 8);
   };
-
-  const handleCopyClick = async () => {
-    const summary = buildInfoSummary(props.buildInfo);
-
-    try {
-      await navigator.clipboard.writeText(summary);
-      setCopyLabel("Copied build summary");
-      window.setTimeout(() => setCopyLabel("Copy build summary"), 1_500);
-      return;
-    } catch {
-      setCopyLabel("Copy unavailable");
-      window.setTimeout(() => setCopyLabel("Copy build summary"), 1_500);
-    }
-  };
+  const commitUrl = () => `${repositoryUrl}/commit/${props.buildInfo.commit}`;
 
   return (
     <section aria-label="Build information" class="build-info-panel">
-      <p class="build-info-label">Build provenance</p>
-
       <dl class="build-info-grid">
         <div>
           <dt>Version</dt>
@@ -44,17 +27,28 @@ export function BuildInfoPanel(props: BuildInfoPanelProps) {
         </div>
         <div>
           <dt>Commit</dt>
-          <dd title={props.buildInfo.commit}>{displayCommit()}</dd>
+          <dd>
+            {isCommitAvailable() ? (
+              <a
+                aria-label={`Commit ${props.buildInfo.commit} on GitHub`}
+                class="build-info-commit-link"
+                href={commitUrl()}
+                rel="noreferrer"
+                target="_blank"
+                title={props.buildInfo.commit}
+              >
+                {displayCommit()}
+              </a>
+            ) : (
+              displayCommit()
+            )}
+          </dd>
         </div>
         <div>
           <dt>Built</dt>
           <dd>{props.buildInfo.builtAt}</dd>
         </div>
       </dl>
-
-      <button class="ghost-button" type="button" onClick={handleCopyClick}>
-        {copyLabel()}
-      </button>
     </section>
   );
 }

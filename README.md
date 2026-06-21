@@ -68,8 +68,9 @@ The UI includes a build information panel that surfaces:
 - git commit
 - build timestamp
 
-That data is generated during the Vite build and can be copied from the site to
-make debugging and release verification easier.
+That data is generated during the Vite build so deployed pages expose the
+running version, linked source commit, and timestamp for debugging and release
+verification.
 
 ## Tech stack
 

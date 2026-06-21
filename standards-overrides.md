@@ -6,7 +6,7 @@ Use this file to record deliberate deviations from the canonical coding and arch
 
 | Standard | Local decision | Rationale | Owner | Review date |
 | --- | --- | --- | --- | --- |
-| `REPLACE_WITH_STANDARD` | `REPLACE_WITH_LOCAL_DECISION` | `REPLACE_WITH_REASON` | `REPLACE_WITH_OWNER` | `REPLACE_WITH_DATE` |
+| `standards/core/operability.md` runtime provenance copy action | Footer build info omits a copy summary control and links the short commit hash to the exact GitHub commit instead. | The footer should stay quieter for this small app while still exposing version, build time, and the exact source commit through the link target. | `thinking-in-sats maintainers` | `2026-12-21` |
 
 ## Notes
 

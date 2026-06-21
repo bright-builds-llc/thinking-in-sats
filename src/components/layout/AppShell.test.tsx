@@ -80,7 +80,7 @@ describe("AppShell", () => {
     expect(menu).toHaveAttribute("data-closed");
   });
 
-  it("renders route content with standard footer and quiet build provenance", () => {
+  it("renders route content with standard footer and quiet build information", () => {
     // Act
     render(() => (
       <AppShell buildInfo={buildInfo}>
@@ -114,9 +114,19 @@ describe("AppShell", () => {
     const buildRegion = within(footer).getByRole("region", {
       name: "Build information",
     });
-    expect(within(buildRegion).getByText("Build provenance")).toBeInTheDocument();
+    expect(
+      within(buildRegion).queryByText("Build provenance"),
+    ).not.toBeInTheDocument();
     expect(within(buildRegion).getByText("0.1.0")).toBeInTheDocument();
-    expect(within(buildRegion).getByText("abcdef12")).toHaveAttribute(
+    const commitLink = within(buildRegion).getByRole("link", {
+      name: "Commit abcdef1234567890 on GitHub",
+    });
+    expect(commitLink).toHaveTextContent("abcdef12");
+    expect(commitLink).toHaveAttribute(
+      "href",
+      "https://github.com/bright-builds-llc/thinking-in-sats/commit/abcdef1234567890",
+    );
+    expect(commitLink).toHaveAttribute(
       "title",
       "abcdef1234567890",
     );
@@ -124,10 +134,10 @@ describe("AppShell", () => {
       within(buildRegion).getByText("2026-04-08T00:00:00.000Z"),
     ).toBeInTheDocument();
     expect(
-      within(buildRegion).getByRole("button", {
+      within(buildRegion).queryByRole("button", {
         name: "Copy build summary",
       }),
-    ).toBeInTheDocument();
+    ).not.toBeInTheDocument();
   });
 
   it("keeps unavailable build provenance fields visible", () => {
@@ -150,5 +160,6 @@ describe("AppShell", () => {
       name: "Build information",
     });
     expect(within(buildRegion).getAllByText("Unavailable")).toHaveLength(3);
+    expect(within(buildRegion).queryByRole("link")).not.toBeInTheDocument();
   });
 });
