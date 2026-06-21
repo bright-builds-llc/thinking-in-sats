@@ -1,9 +1,9 @@
 import { createMemo } from "solid-js";
 
 import { featuredEverydayItems } from "../content/items";
-import type { QuoteState } from "../domain/quoteCache";
 import { deriveItemsWithSats } from "../domain/pricing";
 import { createMediaQuery } from "../primitives/createMediaQuery";
+import type { QuoteState } from "../services/quoteStore";
 import {
   HomeHeroSection,
   MethodSection,

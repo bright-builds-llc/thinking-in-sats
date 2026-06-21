@@ -7,31 +7,28 @@ import { HomePage } from "./routes/HomePage";
 import { QuizPage } from "./routes/QuizPage";
 import { everydayItems } from "./content/items";
 import { getBuildInfo } from "./services/buildInfo";
-import {
-  cleanupQuoteStore,
-  getQuoteState,
-  initializeQuoteStore,
-  subscribeToQuoteState,
-} from "./services/quoteStore";
+import { liveQuoteStore } from "./services/quoteStore";
 
 function App() {
-  const [quoteState, setQuoteState] = createSignal(getQuoteState());
+  const [quoteState, setQuoteState] = createSignal(
+    liveQuoteStore.getSnapshot(),
+  );
   const buildInfo = getBuildInfo();
   const AppRoot = (props: { children?: JSX.Element }) => (
     <AppShell buildInfo={buildInfo}>{props.children}</AppShell>
   );
 
   onMount(() => {
-    initializeQuoteStore();
-    setQuoteState(getQuoteState());
+    liveQuoteStore.start();
+    setQuoteState(liveQuoteStore.getSnapshot());
 
-    const unsubscribe = subscribeToQuoteState((nextState) => {
+    const unsubscribe = liveQuoteStore.subscribe((nextState) => {
       setQuoteState(nextState);
     });
 
     return () => {
       unsubscribe();
-      cleanupQuoteStore();
+      liveQuoteStore.stop();
     };
   });
 

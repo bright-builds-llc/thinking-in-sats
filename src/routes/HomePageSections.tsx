@@ -19,8 +19,8 @@ import {
   formatUsdPerBitcoin,
 } from "../domain/formatting";
 import type { EverydayItemWithSats } from "../domain/itemTypes";
-import type { PriceQuote } from "../domain/quoteCache";
 import { usdCentsToSats } from "../domain/pricing";
+import type { PriceQuote } from "../services/quoteStore";
 
 type QuoteAwareSectionProps = {
   maybeQuote: PriceQuote | null;
@@ -107,7 +107,7 @@ export function QuoteReferencePanel(props: QuoteReferencePanelProps) {
                 1 USD ≈ {formatSatLabel(usdCentsToSats(100, quote().usdPerBitcoin))}
               </span>
               <span>
-                Source: {quote().source} · updated{" "}
+                Source: {quote().sourceLabel} · updated{" "}
                 {new Date(quote().fetchedAt).toLocaleTimeString([], {
                   hour: "numeric",
                   minute: "2-digit",

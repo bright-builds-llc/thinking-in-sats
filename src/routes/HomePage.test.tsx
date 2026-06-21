@@ -2,7 +2,7 @@ import { render } from "@solidjs/testing-library";
 import type { JSX } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { QuoteState } from "../domain/quoteCache";
+import type { QuoteState } from "../services/quoteStore";
 import { HomePage } from "./HomePage";
 
 vi.mock("@solidjs/router", () => ({
@@ -41,7 +41,7 @@ const quoteState: QuoteState = {
   currentQuote: {
     usdPerBitcoin: 100_000,
     fetchedAt: 1_710_000_000_000,
-    source: "coingecko",
+    sourceLabel: "CoinGecko",
   },
   maybeError: null,
   isStale: false,

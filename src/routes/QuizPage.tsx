@@ -10,8 +10,8 @@ import {
   evaluateQuizAnswer,
   selectNextQuizItem,
 } from "../domain/quiz";
-import type { QuoteState } from "../domain/quoteCache";
 import { deriveItemsWithSats } from "../domain/pricing";
+import type { QuoteState } from "../services/quoteStore";
 import {
   QuizPageIntro,
   QuizQuestionLayout,
