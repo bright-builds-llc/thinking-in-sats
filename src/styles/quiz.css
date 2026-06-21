@@ -1,0 +1,132 @@
+.quiz-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.quiz-layout {
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+}
+
+.quiz-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.quiz-card__eyebrow {
+  color: var(--color-accent-soft);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+.quiz-card__name {
+  margin: 0;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  line-height: 0.96;
+}
+
+.quiz-card__description,
+.quiz-card__meta {
+  color: var(--color-text-secondary);
+}
+
+.quiz-card__prompt {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.quiz-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.quiz-panel__header,
+.quiz-panel__actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.quiz-choices {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.quiz-choice {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  min-height: 3.3rem;
+  border-radius: 1rem;
+  border: 1px solid var(--color-border-strong);
+  background: rgb(14 14 19 / 0.78);
+  padding: 0.85rem 1rem;
+  color: var(--color-text-primary);
+  text-align: left;
+}
+
+.quiz-choice:hover {
+  border-color: rgb(255 149 84 / 0.35);
+}
+
+.quiz-choice--correct {
+  border-color: rgb(99 222 135 / 0.65);
+  background: rgb(56 168 94 / 0.14);
+}
+
+.quiz-choice--incorrect {
+  border-color: rgb(247 102 102 / 0.6);
+  background: rgb(178 50 50 / 0.12);
+}
+
+.quiz-choice__label {
+  min-width: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.quiz-choice__btc,
+.quiz-choice__hint {
+  min-width: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.quiz-feedback {
+  padding: 1rem;
+  border-radius: 1rem;
+  border: 1px solid var(--color-border-subtle);
+  background: rgb(255 149 84 / 0.06);
+}
+
+.quiz-feedback__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.quiz-feedback--success {
+  border-color: rgb(99 222 135 / 0.4);
+  background: rgb(56 168 94 / 0.12);
+}
+
+.quiz-feedback--error {
+  border-color: rgb(247 102 102 / 0.4);
+  background: rgb(178 50 50 / 0.12);
+}
+
+.quiz-feedback h3 {
+  margin: 0 0 0.35rem;
+}
+
+.quiz-feedback p {
+  margin: 0;
+  color: var(--color-text-secondary);
+}

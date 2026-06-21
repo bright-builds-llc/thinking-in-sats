@@ -80,13 +80,6 @@ export function formatRelativeUpdatedAt(
   return `${deltaDays}d ago`;
 }
 
-export function formatAbsoluteTimestamp(timestamp: number): string {
-  return new Intl.DateTimeFormat("en-US", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(timestamp));
-}
-
 function trimDecimal(value: number): string {
   return value
     .toFixed(value >= 100 ? 0 : value >= 10 ? 1 : 2)

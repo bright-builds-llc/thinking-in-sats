@@ -1,13 +1,18 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import {
   FIVE_MINUTES_MS,
   createQuoteCacheRecord,
   getQuoteCacheStatus,
+  parseFreshQuoteFromApi,
   parseQuoteCacheRecord,
   shouldRefreshQuote,
   TEN_MINUTES_MS,
 } from './quoteCache'
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe('getQuoteCacheStatus', () => {
   it('reports a fresh quote within the freshness window', () => {
@@ -82,5 +87,54 @@ describe('shouldRefreshQuote', () => {
     // Assert
     expect(recentResult).toBe(false)
     expect(oldResult).toBe(true)
+  })
+})
+
+describe('parseFreshQuoteFromApi', () => {
+  it('parses a valid API quote and timestamp', () => {
+    // Arrange
+    const input = {
+      usdPerBitcoin: 83_500,
+      maybeApiUpdatedAtUnixSeconds: 1_710_000_000,
+    }
+
+    // Act
+    const result = parseFreshQuoteFromApi(input)
+
+    // Assert
+    expect(result).toEqual({
+      usdPerBitcoin: 83_500,
+      fetchedAt: 1_710_000_000_000,
+      source: 'coingecko',
+    })
+  })
+
+  it('uses the current time when the API timestamp is missing', () => {
+    // Arrange
+    vi.spyOn(Date, 'now').mockReturnValue(1_711_000_000_000)
+
+    // Act
+    const result = parseFreshQuoteFromApi({ usdPerBitcoin: 84_000 })
+
+    // Assert
+    expect(result).toEqual({
+      usdPerBitcoin: 84_000,
+      fetchedAt: 1_711_000_000_000,
+      source: 'coingecko',
+    })
+  })
+
+  it('rejects missing or non-positive BTC/USD quotes', () => {
+    // Arrange
+    const missingQuote = {}
+    const zeroQuote = { usdPerBitcoin: 0 }
+
+    // Act
+    const parseMissingQuote = () => parseFreshQuoteFromApi(missingQuote)
+    const parseZeroQuote = () => parseFreshQuoteFromApi(zeroQuote)
+
+    // Assert
+    expect(parseMissingQuote).toThrow('invalid BTC/USD quote')
+    expect(parseZeroQuote).toThrow('invalid BTC/USD quote')
   })
 })

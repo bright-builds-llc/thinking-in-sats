@@ -2,7 +2,7 @@ export const FIVE_MINUTES_MS = 5 * 60 * 1000;
 export const TEN_MINUTES_MS = 10 * 60 * 1000;
 const FIFTEEN_MINUTES_MS = 15 * 60 * 1000;
 
-export type QuoteSource = "coingecko" | "cache" | "stale-cache";
+export type QuoteSource = "coingecko" | "cache";
 
 export type PriceQuote = {
   usdPerBitcoin: number;
@@ -24,12 +24,28 @@ export type QuoteCacheStatus = {
   shouldAttemptRefresh: boolean;
 };
 
-export type QuoteState = {
-  status: "loading" | "ready" | "error";
+export type QuoteLoadingState = {
+  status: "loading";
   currentQuote: PriceQuote | null;
+  maybeError: null;
+  isStale: boolean;
+};
+
+export type QuoteReadyState = {
+  status: "ready";
+  currentQuote: PriceQuote;
   maybeError: string | null;
   isStale: boolean;
 };
+
+export type QuoteErrorState = {
+  status: "error";
+  currentQuote: null;
+  maybeError: string;
+  isStale: false;
+};
+
+export type QuoteState = QuoteLoadingState | QuoteReadyState | QuoteErrorState;
 
 export function createDefaultQuoteState(): QuoteState {
   return {

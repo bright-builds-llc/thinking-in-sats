@@ -44,36 +44,63 @@
 
 ## task-bright-builds-must-operability-state | 2026-06-20 19:14 CDT | Fix must-level operability and state-model findings
 
-- [ ] Move build provenance from the home route into stable product chrome, preferably the footer/app shell, so both `/` and `/quiz` expose version, commit, and build time.
-- [ ] Change `buildInfoSummary` to return one line, for example `version=0.1.0 commit=<full-sha-or-Unavailable> builtAt=<timestamp-or-Unavailable>`.
-- [ ] Preserve visible `Unavailable` fallback text for missing version, commit, and build timestamp fields.
-- [ ] Add focused tests for `buildInfoSummary` and the route-wide build provenance surface.
-- [ ] Refactor `QuoteState` into a discriminated union so ready/error/loading states encode their valid quote, error, and stale-field combinations.
-- [ ] Update quote store, home page, quiz page, and tests to consume the discriminated state without widening back to invalid nullable combinations.
-- [ ] Verify with `bun run verify` plus targeted tests for build info and quote state behavior.
+- [x] Move build provenance from the home route into stable product chrome, preferably the footer/app shell, so both `/` and `/quiz` expose version, commit, and build time.
+- [x] Change `buildInfoSummary` to return one line, for example `version=0.1.0 commit=<full-sha-or-Unavailable> builtAt=<timestamp-or-Unavailable>`.
+- [x] Preserve visible `Unavailable` fallback text for missing version, commit, and build timestamp fields.
+- [x] Add focused tests for `buildInfoSummary` and the route-wide build provenance surface.
+- [x] Refactor `QuoteState` into a discriminated union so ready/error/loading states encode their valid quote, error, and stale-field combinations.
+- [x] Update quote store, home page, quiz page, and tests to consume the discriminated state without widening back to invalid nullable combinations.
+- [x] Verify with `bun run verify` plus targeted tests for build info and quote state behavior.
+
+### Completion Review
+
+- Completed 2026-06-20 19:27 CDT.
+- Evidence: `BuildInfoPanel` now renders through `AppShell`/`SiteFooter`; `buildInfoSummary` is one line; `QuoteState` is a loading/ready/error discriminated union.
+- Verification: `bun run typecheck`, `bun run lint`, `bun run test`, and final `bun run verify` passed.
 
 ## task-bright-builds-ui-code-shape | 2026-06-20 19:14 CDT | Split oversized UI and stylesheet surfaces
 
-- [ ] Split `src/styles/global.css` into responsibility-focused CSS files while keeping `src/styles/global.css` as the single imported entrypoint.
-- [ ] Use stable groups for the split: base, layout, shared surfaces/buttons, timeline, quiz, build info, footer, and responsive rules.
-- [ ] Extract `HomePage` sections into named components or small helpers for hero, quote reference, quick anchors, timeline intro, method, and provenance removal.
-- [ ] Extract `QuizPage` flow/panel pieces so route-level code owns orchestration while display subcomponents own rendering.
-- [ ] Keep route paths, visible behavior, and public app behavior unchanged.
-- [ ] Verify with `bun run verify` and route/component tests that cover desktop and mobile timeline behavior.
+- [x] Split `src/styles/global.css` into responsibility-focused CSS files while keeping `src/styles/global.css` as the single imported entrypoint.
+- [x] Use stable groups for the split: base, layout, shared surfaces/buttons, timeline, quiz, build info, footer, and responsive rules.
+- [x] Extract `HomePage` sections into named components or small helpers for hero, quote reference, quick anchors, timeline intro, method, and provenance removal.
+- [x] Extract `QuizPage` flow/panel pieces so route-level code owns orchestration while display subcomponents own rendering.
+- [x] Keep route paths, visible behavior, and public app behavior unchanged.
+- [x] Verify with `bun run verify` and route/component tests that cover desktop and mobile timeline behavior.
+
+### Completion Review
+
+- Completed 2026-06-20 19:27 CDT.
+- Evidence: `src/styles/global.css` is now an import entrypoint; the largest split stylesheet is `src/styles/timeline.css` at 289 lines.
+- Evidence: `HomePage` now delegates to `HomePageSections`; `QuizPage` delegates rendering to `QuizPageView`.
+- Verification: route/component tests passed during implementation; final `bun run verify` passed.
 
 ## task-bright-builds-domain-modeling-tests | 2026-06-20 19:14 CDT | Tighten domain invariants and pure-helper coverage
 
-- [ ] Add unit tests for `parseFreshQuoteFromApi`, including invalid quote rejection and missing API timestamp fallback behavior.
-- [ ] Review domain primitives that carry invariants, especially sats, USD cents, BTC/USD quote values, and quiz choices.
-- [ ] Introduce branded types, parsers, factories, or discriminated shapes only where they remove real invalid states or repeated validation.
-- [ ] Consider tightening `QuizQuestion` so the correct choice cannot drift from the choices list, or document why runtime construction is sufficient.
-- [ ] Remove unused compatibility aliases/exports after an `rg` reference check, or document why each alias is intentionally retained.
-- [ ] Verify with `bun run verify` and focused domain tests.
+- [x] Add unit tests for `parseFreshQuoteFromApi`, including invalid quote rejection and missing API timestamp fallback behavior.
+- [x] Review domain primitives that carry invariants, especially sats, USD cents, BTC/USD quote values, and quiz choices.
+- [x] Introduce branded types, parsers, factories, or discriminated shapes only where they remove real invalid states or repeated validation.
+- [x] Consider tightening `QuizQuestion` so the correct choice cannot drift from the choices list, or document why runtime construction is sufficient.
+- [x] Remove unused compatibility aliases/exports after an `rg` reference check, or document why each alias is intentionally retained.
+- [x] Verify with `bun run verify` and focused domain tests.
+
+### Completion Review
+
+- Completed 2026-06-20 19:27 CDT.
+- Evidence: added focused `parseFreshQuoteFromApi` tests; `QuoteState` was the high-value discriminated shape; no extra branded primitives were introduced where they would only add ceremony.
+- Decision: `QuizQuestion` keeps runtime construction plus focused tests because TypeScript cannot cheaply prove "exactly one correct choice from this shuffled list" without a heavier tuple/dependent model.
+- Evidence: removed unused `satsToBtc`, `satsToApproxUsdCents`, `deriveQuoteSummary`, `formatAbsoluteTimestamp`, `quoteToDerivedMetrics`, and `stale-cache`.
+- Verification: `rg` found no remaining references to those removed exports; final `bun run verify` passed.
 
 ## task-bright-builds-local-guidance | 2026-06-20 19:14 CDT | Add concise repo-local workflow guidance
 
-- [ ] Add a `## Repo-Local Guidance` section outside the managed block in `AGENTS.md`.
-- [ ] Include durable local facts: Bun is the package manager, dependencies install with `bun install --frozen-lockfile`, verification runs with `bun run verify`, and GitHub Pages builds use `PAGES_BASE_PATH=/thinking-in-sats/`.
-- [ ] State that no repo-supported browser/E2E command exists yet, so browser-level checks are manual unless a future task adds tooling.
-- [ ] Leave `standards-overrides.md` unchanged unless a concrete, approved exception exists.
-- [ ] Verify the diff does not edit the managed Bright Builds block.
+- [x] Add a `## Repo-Local Guidance` section outside the managed block in `AGENTS.md`.
+- [x] Include durable local facts: Bun is the package manager, dependencies install with `bun install --frozen-lockfile`, verification runs with `bun run verify`, and GitHub Pages builds use `PAGES_BASE_PATH=/thinking-in-sats/`.
+- [x] State that no repo-supported browser/E2E command exists yet, so browser-level checks are manual unless a future task adds tooling.
+- [x] Leave `standards-overrides.md` unchanged unless a concrete, approved exception exists.
+- [x] Verify the diff does not edit the managed Bright Builds block.
+
+### Completion Review
+
+- Completed 2026-06-20 19:27 CDT.
+- Evidence: `AGENTS.md` now has concise repo-local guidance after the managed Bright Builds block.
+- Verification: `standards-overrides.md` remains unchanged; final diff review confirms managed Bright Builds block text was not edited.

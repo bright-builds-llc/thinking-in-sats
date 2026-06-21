@@ -1,0 +1,75 @@
+.site-shell {
+  width: min(100%, 80rem);
+  margin: 0 auto;
+  padding: 1.25rem;
+}
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0 1.25rem;
+  backdrop-filter: blur(18px);
+}
+
+.brand-block {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.brand-title {
+  margin: 0;
+  font-size: clamp(1.25rem, 3vw, 1.65rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.brand-subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 999px;
+  text-decoration: none;
+  color: var(--color-text-secondary);
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background-color 160ms ease;
+}
+
+.nav-link:hover,
+.nav-link[aria-current="page"],
+.nav-link--active {
+  border-color: rgb(255 158 92 / 0.45);
+  color: var(--color-text-primary);
+  background: rgb(255 142 77 / 0.08);
+}
+
+.site-main {
+  display: grid;
+  gap: 2rem;
+}
+
+.page {
+  display: grid;
+  gap: 1.5rem;
+}

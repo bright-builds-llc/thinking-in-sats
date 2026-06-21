@@ -1,13 +1,5 @@
 import { Show, batch, createMemo, createSignal } from "solid-js";
 
-import { QuizCard } from "../components/quiz/QuizCard";
-import { QuizChoices } from "../components/quiz/QuizChoices";
-import { QuizFeedback } from "../components/quiz/QuizFeedback";
-import {
-  formatApproxUsd,
-  formatBtcValue,
-  formatSatLabel,
-} from "../domain/formatting";
 import type {
   EverydayItem,
   EverydayItemWithSats,
@@ -20,6 +12,11 @@ import {
 } from "../domain/quiz";
 import type { QuoteState } from "../domain/quoteCache";
 import { deriveItemsWithSats } from "../domain/pricing";
+import {
+  QuizPageIntro,
+  QuizQuestionLayout,
+  QuizQuoteFallback,
+} from "./QuizPageView";
 
 type QuizPageProps = {
   items: EverydayItem[];
@@ -173,69 +170,23 @@ export function QuizPage(props: QuizPageProps) {
 
   return (
     <section class="page quiz-page">
-      <div class="section-heading">
-        <span class="eyebrow">Quiz</span>
-        <h1>Train your sats intuition</h1>
-        <p class="lede">
-          Each question uses wide power-of-ten choices so you can focus on
-          building rough mental models before you think about dollars.
-        </p>
-      </div>
+      <QuizPageIntro />
 
       <Show
         when={maybeQuizView()}
         keyed
-        fallback={
-          <div class="surface-card">
-            <p class="lede">
-              We need a live BTC/USD quote before we can turn quiz items into
-              sats.
-            </p>
-          </div>
-        }
+        fallback={<QuizQuoteFallback />}
       >
         {(quizView) => (
-          <div class="quiz-layout" ref={handleQuizLayoutRef}>
-            <QuizCard item={quizView.currentItem} />
-
-            <div class="surface-card quiz-panel">
-              <div class="quiz-panel__header">
-                <span class="stat-chip">Question #{questionIndex() + 1}</span>
-                <span class="stat-chip">Any rank can be right</span>
-              </div>
-
-              <QuizChoices
-                choices={quizView.question.choices}
-                hasAnswered={Boolean(maybeResult())}
-                selectedChoiceId={maybeSelectedChoiceId()}
-                onSelect={handleChoiceSelect}
-              />
-
-              <QuizFeedback
-                isVisible={Boolean(maybeResult())}
-                isCorrect={maybeResult()?.isCorrect ?? false}
-                explanation={`This item lands near ${formatSatLabel(
-                  quizView.question.correctChoiceSatAmount,
-                )}, or ${formatBtcValue(
-                  quizView.question.correctChoiceSatAmount,
-                )} BTC.`}
-                extraLine={`Approximate USD anchor: ${formatApproxUsd(
-                  quizView.currentItem.approxUsdCents,
-                )}.`}
-              />
-
-              <div class="quiz-panel__actions">
-                <button
-                  class="primary-button"
-                  type="button"
-                  disabled={!maybeResult()}
-                  onClick={handleNextQuestion}
-                >
-                  Next item
-                </button>
-              </div>
-            </div>
-          </div>
+          <QuizQuestionLayout
+            maybeResult={maybeResult()}
+            maybeSelectedChoiceId={maybeSelectedChoiceId()}
+            onChoiceSelect={handleChoiceSelect}
+            onNextQuestion={handleNextQuestion}
+            onQuizLayoutRef={handleQuizLayoutRef}
+            questionIndex={questionIndex()}
+            quizView={quizView}
+          />
         )}
       </Show>
     </section>

@@ -1,5 +1,6 @@
 import { HashRouter, Route } from "@solidjs/router";
 import { createMemo, createSignal, onMount } from "solid-js";
+import type { JSX } from "solid-js";
 
 import { AppShell } from "./components/layout/AppShell";
 import { HomePage } from "./routes/HomePage";
@@ -16,6 +17,9 @@ import {
 function App() {
   const [quoteState, setQuoteState] = createSignal(getQuoteState());
   const buildInfo = getBuildInfo();
+  const AppRoot = (props: { children?: JSX.Element }) => (
+    <AppShell buildInfo={buildInfo}>{props.children}</AppShell>
+  );
 
   onMount(() => {
     initializeQuoteStore();
@@ -34,14 +38,11 @@ function App() {
   const currentQuoteState = createMemo(() => quoteState());
 
   return (
-    <HashRouter root={AppShell}>
+    <HashRouter root={AppRoot}>
       <Route
         path="/"
         component={() => (
-          <HomePage
-            quoteState={currentQuoteState()}
-            buildInfo={buildInfo}
-          />
+          <HomePage quoteState={currentQuoteState()} />
         )}
       />
       <Route

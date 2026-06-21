@@ -3,7 +3,6 @@ import type { JSX } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { QuoteState } from "../domain/quoteCache";
-import type { BuildInfo } from "../services/buildInfo";
 import { HomePage } from "./HomePage";
 
 vi.mock("@solidjs/router", () => ({
@@ -37,12 +36,6 @@ function mockMatchMedia(matches: boolean) {
   });
 }
 
-const buildInfo: BuildInfo = {
-  version: "0.1.0",
-  commit: "abc123",
-  builtAt: "2026-04-08T00:00:00.000Z",
-};
-
 const quoteState: QuoteState = {
   status: "ready",
   currentQuote: {
@@ -65,9 +58,7 @@ describe("HomePage", () => {
     mockMatchMedia(false);
 
     // Act
-    const { container } = render(() => (
-      <HomePage quoteState={quoteState} buildInfo={buildInfo} />
-    ));
+    const { container } = render(() => <HomePage quoteState={quoteState} />);
 
     // Assert
     expect(container.querySelector(".timeline-mobile-list")).not.toBeInTheDocument();
@@ -81,9 +72,7 @@ describe("HomePage", () => {
     mockMatchMedia(true);
 
     // Act
-    const { container } = render(() => (
-      <HomePage quoteState={quoteState} buildInfo={buildInfo} />
-    ));
+    const { container } = render(() => <HomePage quoteState={quoteState} />);
 
     // Assert
     expect(container.querySelector(".timeline-mobile-list")).toBeInTheDocument();

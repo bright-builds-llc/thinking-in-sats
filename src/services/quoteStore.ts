@@ -124,14 +124,21 @@ async function refreshQuote(options?: { minimumDelay?: boolean }) {
       const errorMessage = normalizeUnknownError(error);
       const fallbackQuote = quoteState.currentQuote ?? cachedQuote;
 
-      updateQuoteState({
-        status: fallbackQuote ? "ready" : "error",
-        currentQuote: fallbackQuote,
-        maybeError: fallbackQuote
-          ? `${errorMessage} Using the last cached quote.`
-          : errorMessage,
-        isStale: Boolean(fallbackQuote),
-      });
+      if (fallbackQuote) {
+        updateQuoteState({
+          status: "ready",
+          currentQuote: fallbackQuote,
+          maybeError: `${errorMessage} Using the last cached quote.`,
+          isStale: true,
+        });
+      } else {
+        updateQuoteState({
+          status: "error",
+          currentQuote: null,
+          maybeError: errorMessage,
+          isStale: false,
+        });
+      }
     } finally {
       scheduleRefreshTimer();
       maybeInflightRefresh = undefined;
@@ -180,16 +187,21 @@ export function initializeQuoteStore() {
   if (cachedQuote) {
     const cacheIsFresh = !shouldRefreshQuote(cachedQuote.fetchedAt, nowMs);
 
-    updateQuoteState({
-      status: cacheIsFresh ? "ready" : "loading",
-      currentQuote: cachedQuote,
-      maybeError: null,
-      isStale: !cacheIsFresh,
-    });
-
     if (cacheIsFresh) {
+      updateQuoteState({
+        status: "ready",
+        currentQuote: cachedQuote,
+        maybeError: null,
+        isStale: false,
+      });
       scheduleRefreshTimer();
     } else {
+      updateQuoteState({
+        status: "loading",
+        currentQuote: cachedQuote,
+        maybeError: null,
+        isStale: true,
+      });
       void refreshQuote({ minimumDelay: true });
     }
   } else {
@@ -211,20 +223,4 @@ export function cleanupQuoteStore() {
 
 export async function forceRefreshQuote() {
   await refreshQuote({ minimumDelay: false });
-}
-
-export function quoteToDerivedMetrics(maybeQuote: PriceQuote | null | undefined) {
-  if (!maybeQuote) {
-    return {
-      maybeSatoshiPerUsd: undefined,
-      maybeUsdPerSat: undefined,
-    };
-  }
-
-  const satoshiPerUsd = Math.round(100_000_000 / maybeQuote.usdPerBitcoin);
-
-  return {
-    maybeSatoshiPerUsd: satoshiPerUsd,
-    maybeUsdPerSat: 1 / satoshiPerUsd,
-  };
 }

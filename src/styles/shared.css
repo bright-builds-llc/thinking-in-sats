@@ -1,0 +1,137 @@
+.hero-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1.4fr) minmax(18rem, 0.9fr);
+  align-items: start;
+}
+
+.hero-panel,
+.surface-card,
+.quote-panel {
+  background: linear-gradient(180deg, var(--color-surface-elevated), var(--color-surface-muted));
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-soft);
+  color: var(--color-text-primary);
+}
+
+.hero-panel {
+  padding: clamp(1.4rem, 3vw, 2rem);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--color-accent-soft);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.hero-panel h1,
+.section-heading h1 {
+  margin: 0.75rem 0 1rem;
+  font-size: clamp(2.3rem, 6vw, 4.4rem);
+  line-height: 0.94;
+  letter-spacing: -0.05em;
+}
+
+.lede {
+  margin: 0;
+  color: var(--color-text-secondary);
+  max-width: 36rem;
+  font-size: 1.05rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 2.85rem;
+  border-radius: 999px;
+  padding: 0.8rem 1.2rem;
+  border: 1px solid transparent;
+  font-weight: 700;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.primary-button {
+  background: linear-gradient(180deg, var(--color-accent), var(--color-accent-strong));
+  color: #1a130f;
+}
+
+.secondary-button {
+  background: transparent;
+  border-color: var(--color-border-strong);
+  color: var(--color-text-primary);
+}
+
+.primary-button:hover,
+.secondary-button:hover,
+.nav-link:hover {
+  transform: translateY(-1px);
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  transform: none;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.35rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+  background: rgb(255 149 84 / 0.08);
+  border: 1px solid rgb(255 149 84 / 0.14);
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+}
+
+.quote-panel {
+  padding: 1.5rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.quote-panel h2 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.quote-price {
+  font-size: clamp(1.9rem, 4vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+}
+
+.quote-meta {
+  color: var(--color-text-secondary);
+  display: grid;
+  gap: 0.3rem;
+}
+
+.surface-card {
+  padding: 1.35rem;
+}

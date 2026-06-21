@@ -27,28 +27,12 @@ export function satsToBitcoin(sats: number): number {
   return sats / SATS_PER_BITCOIN;
 }
 
-export const satsToBtc = satsToBitcoin;
-
 export function satsToUsdCents(sats: number, btcUsdPrice: number): number {
   return Math.round(satsToBitcoin(sats) * btcUsdPrice * 100);
 }
 
-export function satsToApproxUsdCents(sats: number, btcUsdPrice: number): number {
-  return satsToUsdCents(sats, btcUsdPrice);
-}
-
 export function btcUsdToUsdPerSat(btcUsdPrice: number): number {
   return btcUsdPrice / SATS_PER_BITCOIN;
-}
-
-export function deriveQuoteSummary(usdPerBitcoin: number) {
-  const satsPerDollarRounded = Math.round(SATS_PER_BITCOIN / usdPerBitcoin);
-
-  return {
-    usdPerBitcoin,
-    satsPerDollarRounded,
-    usdPerSat: btcUsdToUsdPerSat(usdPerBitcoin),
-  };
 }
 
 export function deriveItemWithSats(

@@ -30,3 +30,10 @@ Use this routing map when deciding what to load next:
 - If instructions elsewhere in `AGENTS.md` conflict with `AGENTS.bright-builds.md`, follow the repo-local instructions and treat them as an explicit local exception.
 
 <!-- bright-builds-rules-managed:end -->
+
+## Repo-Local Guidance
+
+- Use Bun for this standalone TypeScript/SolidJS app. Install dependencies with `bun install --frozen-lockfile`.
+- Use `bun run verify` as the repo-owned verification entrypoint; it runs lint, typecheck, tests, and production build.
+- GitHub Pages builds set `PAGES_BASE_PATH=/thinking-in-sats/` so Vite emits repository-scoped asset URLs.
+- No repo-supported browser or E2E command exists yet; browser-level checks are manual until tooling is added.
