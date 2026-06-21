@@ -1,20 +1,29 @@
-import { render, screen, within } from "@solidjs/testing-library";
-import type { JSX } from "solid-js";
+import { render, screen, waitFor, within } from "@solidjs/testing-library";
+import userEvent from "@testing-library/user-event";
+import { splitProps, type JSX } from "solid-js";
 import { describe, expect, it, vi } from "vitest";
 
 import type { BuildInfo } from "../../services/buildInfo";
 import { AppShell } from "./AppShell";
 
 vi.mock("@solidjs/router", () => ({
-  A: (props: {
-    children?: JSX.Element;
-    class?: string;
-    href?: string;
-  }) => (
-    <a class={props.class} href={props.href}>
-      {props.children}
-    </a>
-  ),
+  A: (
+    props: JSX.AnchorHTMLAttributes<HTMLAnchorElement> & {
+      activeClass?: string;
+      end?: boolean;
+      inactiveClass?: string;
+      children?: JSX.Element;
+    },
+  ) => {
+    const [, anchorProps] = splitProps(props, [
+      "activeClass",
+      "end",
+      "inactiveClass",
+    ]);
+
+    return <a {...anchorProps}>{props.children}</a>;
+  },
+  useLocation: () => ({ pathname: "/" }),
 }));
 
 const buildInfo: BuildInfo = {
@@ -24,6 +33,53 @@ const buildInfo: BuildInfo = {
 };
 
 describe("AppShell", () => {
+  it("hides primary route links behind the header menu", async () => {
+    // Arrange
+    const user = userEvent.setup();
+    window.scrollTo = vi.fn();
+
+    // Act
+    render(() => (
+      <AppShell buildInfo={buildInfo}>
+        <p>Route content</p>
+      </AppShell>
+    ));
+
+    // Assert
+    const header = screen.getByRole("banner");
+    expect(
+      within(header).getByRole("link", { name: "Thinking In Sats" }),
+    ).toHaveAttribute("href", "/");
+    expect(
+      within(header).queryByRole("link", { name: "Line" }),
+    ).not.toBeInTheDocument();
+    expect(
+      within(header).queryByRole("link", { name: "Quiz" }),
+    ).not.toBeInTheDocument();
+
+    await user.click(within(header).getByRole("button", { name: "Menu" }));
+
+    const menu = await screen.findByRole("menu");
+    const lineItem = within(menu).getByRole("menuitem", { name: "Line" });
+    expect(lineItem).toHaveAttribute("href", "/");
+    expect(lineItem).toHaveAttribute("aria-current", "page");
+    expect(lineItem).toHaveClass("site-menu-item--active");
+    expect(within(menu).getByRole("menuitem", { name: "Quiz" })).toHaveAttribute(
+      "href",
+      "/quiz",
+    );
+
+    await user.keyboard("{Escape}");
+
+    await waitFor(() => {
+      expect(within(header).getByRole("button", { name: "Menu" })).toHaveAttribute(
+        "aria-expanded",
+        "false",
+      );
+    });
+    expect(menu).toHaveAttribute("data-closed");
+  });
+
   it("renders route content with standard footer and quiet build provenance", () => {
     // Act
     render(() => (

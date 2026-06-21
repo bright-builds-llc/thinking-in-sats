@@ -68,7 +68,7 @@
   border: 1px solid var(--color-border-strong);
   background:
     linear-gradient(135deg, rgb(255 156 82 / 0.07), transparent 48%),
-    rgb(9 14 22 / 0.86);
+    rgb(10 10 10 / 0.88);
   padding: 0.85rem 1rem;
   color: var(--color-text-primary);
   text-align: left;
