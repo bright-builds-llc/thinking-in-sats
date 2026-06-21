@@ -18,8 +18,8 @@
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
-  border: 3px solid rgb(125 211 252 / 0.16);
-  border-top-color: var(--color-accent-cool);
+  border: 3px solid rgb(255 156 82 / 0.16);
+  border-top-color: var(--color-accent);
   animation: spin 950ms linear infinite;
 }
 

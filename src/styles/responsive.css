@@ -25,7 +25,7 @@
     bottom: 0.45rem;
     width: 2px;
     background:
-      linear-gradient(180deg, transparent, rgb(125 211 252 / 0.48) 8%, rgb(255 149 84 / 0.2) 92%, transparent);
+      linear-gradient(180deg, transparent, rgb(255 156 82 / 0.48) 8%, rgb(255 149 84 / 0.2) 92%, transparent);
   }
 
   .timeline-mobile-list .timeline-item--list {
@@ -46,8 +46,8 @@
     width: 0.9rem;
     height: 0.9rem;
     border-radius: 50%;
-    background: linear-gradient(180deg, var(--color-accent-cool), var(--color-accent));
-    box-shadow: 0 0 0 0.22rem rgb(125 211 252 / 0.14);
+    background: linear-gradient(180deg, var(--color-accent-soft), var(--color-accent));
+    box-shadow: 0 0 0 0.22rem rgb(255 156 82 / 0.14);
   }
 
   .timeline-mobile-list .timeline-item--list .timeline-card {

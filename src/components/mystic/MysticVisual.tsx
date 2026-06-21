@@ -79,7 +79,7 @@ function supportsViewAnimation(): boolean {
 
 function mysticAccentColors(intensity: "quiet" | "strong") {
   if (intensity === "strong") {
-    return ["#ff9c52", "#ffd3ab", "#7dd3fc"];
+    return ["#ff9c52", "#ffd3ab", "#ff7d2d"];
   }
 
   return ["rgba(255, 156, 82, 0.52)", "rgba(255, 211, 171, 0.8)"];
@@ -124,7 +124,7 @@ export const MysticSurface: ParentComponent<MysticSurfaceProps> = (props) => {
             <BorderBeam
               borderWidth={1}
               colorFrom="#ff9c52"
-              colorTo="#7dd3fc"
+              colorTo="#ffd3ab"
               duration={16}
               size={180}
             />
@@ -235,7 +235,7 @@ export const MysticGradientText: ParentComponent<MysticGradientTextProps> = (
       <AnimatedGradientText
         class={props.class}
         colorFrom="#ffd3ab"
-        colorTo="#7dd3fc"
+        colorTo="#ff7d2d"
         speed={1.4}
       >
         {props.children}
