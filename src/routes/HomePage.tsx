@@ -6,7 +6,6 @@ import { createMediaQuery } from "../primitives/createMediaQuery";
 import type { QuoteState } from "../services/quoteStore";
 import {
   HomeHeroSection,
-  MethodSection,
   QuickAnchorsSection,
   QuoteReferencePanel,
   QuoteSummarySection,
@@ -42,7 +41,6 @@ export function HomePage(props: HomePageProps) {
         />
       </section>
 
-      <TimelineExplainerSection />
       <QuoteSummarySection maybeQuote={maybeQuote()} />
       <QuickAnchorsSection maybeQuote={maybeQuote()} />
       <TimelineVisualizationSection
@@ -50,7 +48,7 @@ export function HomePage(props: HomePageProps) {
         isMobileTimeline={isMobileTimeline()}
         maybeQuote={maybeQuote()}
       />
-      <MethodSection />
+      <TimelineExplainerSection />
     </div>
   );
 }

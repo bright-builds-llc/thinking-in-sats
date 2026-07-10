@@ -7,11 +7,10 @@ import {
   MysticHighlight,
   MysticNumberTicker,
   MysticSurface,
-  MysticText,
 } from "../components/mystic/MysticVisual";
 import { LoadingState } from "../components/shared/LoadingState";
 import { TimelineSection } from "../components/timeline/TimelineSection";
-import { featuredEverydayItems, totalEverydayItemCount } from "../content/items";
+import { featuredEverydayItems } from "../content/items";
 import {
   centsToUsdString,
   formatBtcAmount,
@@ -44,6 +43,23 @@ function formatTickerNumber(value: number): string {
   return wholeNumberFormatter.format(Math.round(value));
 }
 
+function scrollTimelineIntoView() {
+  const maybeTimeline = document.getElementById("timeline");
+
+  if (!maybeTimeline) {
+    return;
+  }
+
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)",
+  ).matches;
+
+  maybeTimeline.scrollIntoView({
+    behavior: prefersReducedMotion ? "auto" : "smooth",
+    block: "start",
+  });
+}
+
 export function HomeHeroSection() {
   return (
     <MysticSurface beam class="hero-panel hero-copy" intensity="strong">
@@ -52,21 +68,21 @@ export function HomeHeroSection() {
         <MysticGradientText>Thinking In Sats</MysticGradientText>
       </h1>
       <p class="lede">
-        Train your intuition by mapping everyday purchases onto a single
-        logarithmic sats line. Learn the satoshi value first, then reveal the
-        approximate dollar anchor only when you want it.
+        Learn to think in sats by seeing how much familiar everyday purchases
+        cost, below. Then take a quiz to test your intuition.
       </p>
       <div class="hero-actions">
         <A class="primary-button" href="/quiz">
           Take the quiz
         </A>
-        <a class="secondary-button" href="#timeline">
-          Explore the line
-        </a>
-      </div>
-      <div class="hero-stats">
-        <span class="stat-chip">{featuredEverydayItems.length} featured anchors</span>
-        <span class="stat-chip">{totalEverydayItemCount} everyday items total</span>
+        <button
+          aria-controls="timeline"
+          class="secondary-button"
+          onClick={scrollTimelineIntoView}
+          type="button"
+        >
+          Explore prices in sats
+        </button>
       </div>
     </MysticSurface>
   );
@@ -246,7 +262,6 @@ export function TimelineVisualizationSection(props: TimelineVisualizationProps) 
       id="timeline"
     >
       <div class="section-heading">
-        <span class="eyebrow">Main visualization</span>
         <h2>
           The <MysticGradientText>vertical sats line</MysticGradientText>
         </h2>
@@ -277,30 +292,6 @@ export function TimelineVisualizationSection(props: TimelineVisualizationProps) 
           />
         )}
       </Show>
-    </MysticSurface>
-  );
-}
-
-export function MethodSection() {
-  return (
-    <MysticSurface as="section" class="surface-card method-card">
-      <div class="section-heading">
-        <span class="eyebrow">Method</span>
-        <MysticText as="h2" by="word">
-          How to read the values
-        </MysticText>
-      </div>
-      <ol class="quote-meta">
-        <li>Start with the item name and its satoshi value.</li>
-        <li>
-          Notice the decade markers: 1 sat, 10 sats, 100 sats, 1k, 10k, 100k,
-          and beyond.
-        </li>
-        <li>
-          Use the optional reveal to compare your new sats intuition with the
-          approximate USD anchor.
-        </li>
-      </ol>
     </MysticSurface>
   );
 }

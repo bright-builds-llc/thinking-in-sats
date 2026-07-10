@@ -31,11 +31,8 @@ export function TimelineScale(props: TimelineScaleProps) {
               top: `${((timelineBreak.startPosition + timelineBreak.endPosition) / 2) * 100}%`,
             }}
           >
-            <svg viewBox="0 0 24 18">
-              <polyline
-                points="12,0 6,5 18,9 6,13 12,18"
-                vector-effect="non-scaling-stroke"
-              />
+            <svg viewBox="0 0 24 24">
+              <path d="M14.4 1 4.8 13.2h6.1L8.6 23 19.2 9.5h-6.1L14.4 1Z" />
             </svg>
           </span>
         )}

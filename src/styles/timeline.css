@@ -71,6 +71,8 @@
 
 .timeline-scroll {
   position: relative;
+  /* Keep positioned-card paint overflow out of the horizontal shell's vertical scroll range. */
+  overflow-y: clip;
 }
 
 .timeline-spine {
@@ -148,10 +150,10 @@
   overflow: visible;
 }
 
-.timeline-scale__break polyline {
-  fill: none;
-  stroke: rgb(255 172 108 / 0.9);
-  stroke-width: 2;
+.timeline-scale__break path {
+  fill: rgb(255 172 108 / 0.94);
+  stroke: rgb(255 205 166 / 0.76);
+  stroke-width: 0.7;
 }
 
 .timeline-item {

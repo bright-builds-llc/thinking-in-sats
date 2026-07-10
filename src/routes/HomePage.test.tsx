@@ -1,4 +1,4 @@
-import { render } from "@solidjs/testing-library";
+import { fireEvent, render } from "@solidjs/testing-library";
 import type { JSX } from "solid-js";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -53,6 +53,96 @@ afterEach(() => {
 });
 
 describe("HomePage", () => {
+  it("scrolls the vertical sats line into view from the hero", () => {
+    // Arrange
+    mockMatchMedia(false);
+    const { container, getByRole } = render(() => (
+      <HomePage quoteState={quoteState} />
+    ));
+    const timeline = container.querySelector<HTMLElement>("#timeline");
+    const scrollIntoView = vi.fn();
+
+    if (!timeline) {
+      throw new Error("Expected the vertical sats line to render.");
+    }
+
+    timeline.scrollIntoView = scrollIntoView;
+
+    // Act
+    fireEvent.click(
+      getByRole("button", { name: "Explore prices in sats" }),
+    );
+
+    // Assert
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: "smooth",
+      block: "start",
+    });
+  });
+
+  it("renders the simplified hero copy without item-count chips", () => {
+    // Arrange
+    mockMatchMedia(false);
+
+    // Act
+    const { queryByText } = render(() => <HomePage quoteState={quoteState} />);
+
+    // Assert
+    expect(
+      queryByText(
+        "Learn to think in sats by seeing how much familiar everyday purchases cost, below. Then take a quiz to test your intuition.",
+      ),
+    ).toBeInTheDocument();
+    expect(queryByText("32 featured anchors")).not.toBeInTheDocument();
+    expect(queryByText("68 everyday items total")).not.toBeInTheDocument();
+  });
+
+  it("does not label the timeline as the main visualization", () => {
+    // Arrange
+    mockMatchMedia(false);
+
+    // Act
+    const { queryByText } = render(() => <HomePage quoteState={quoteState} />);
+
+    // Assert
+    expect(queryByText("Main visualization")).not.toBeInTheDocument();
+  });
+
+  it("places the explanatory cards after the vertical sats line", () => {
+    // Arrange
+    mockMatchMedia(false);
+
+    // Act
+    const { container, getByRole } = render(() => (
+      <HomePage quoteState={quoteState} />
+    ));
+    const timeline = container.querySelector("#timeline");
+    const explainer = getByRole("heading", {
+      name: "Why a logarithmic line?",
+    }).closest(".timeline-help");
+
+    // Assert
+    expect(timeline).toBeInTheDocument();
+    expect(explainer).toBeInTheDocument();
+    expect(
+      (timeline?.compareDocumentPosition(explainer as Node) ?? 0) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+
+  it("does not render the retired Method pane", () => {
+    // Arrange
+    mockMatchMedia(false);
+
+    // Act
+    const { queryByRole } = render(() => <HomePage quoteState={quoteState} />);
+
+    // Assert
+    expect(
+      queryByRole("heading", { name: "How to read the values" }),
+    ).not.toBeInTheDocument();
+  });
+
   it("keeps the timeline in desktop lanes above the mobile breakpoint", () => {
     // Arrange
     mockMatchMedia(false);

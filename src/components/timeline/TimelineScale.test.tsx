@@ -32,6 +32,6 @@ describe("TimelineScale", () => {
     expect(Number.parseFloat(zigzag?.style.top ?? "")).toBeCloseTo(30);
     expect(zigzag).toHaveAttribute("data-minimum-sats", "1000");
     expect(zigzag).toHaveAttribute("data-maximum-sats", "10000");
-    expect(zigzag?.querySelector("polyline")).toBeInTheDocument();
+    expect(zigzag?.querySelector("path")).toBeInTheDocument();
   });
 });

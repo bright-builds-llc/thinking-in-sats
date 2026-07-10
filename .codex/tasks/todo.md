@@ -135,3 +135,44 @@
 - Desktop geometry passed at 1121, 1280, 1440, and 1920 px with 32 in-bounds cards, zero same-lane overlaps, three visible zigzags, and connector endpoints within 1 px.
 - Mobile controls passed at 1120, 768, and 390 px with list flow unchanged, no breaks or connectors, and no overlap or horizontal overflow.
 - Visual review confirmed opaque spine interruptions and decade-label pills above crossing lines. `git diff --check` and `bun run verify` passed; 14 test files and 57 tests are green.
+
+## task-homepage-content-hierarchy | 2026-07-10 14:20 | Simplify homepage content hierarchy
+
+- [x] Remove the featured-anchor and total-item chips from the hero.
+- [x] Replace the hero introduction with the approved educational copy.
+- [x] Remove the “Main visualization” eyebrow.
+- [x] Move the three explanatory cards below the vertical sats line.
+- [x] Add regression coverage and run `bun run verify`.
+
+### Completion review
+
+- The hero now uses the approved copy and no longer renders either item-count chip.
+- The vertical sats line no longer has a “Main visualization” eyebrow, and the three explanatory cards are the final homepage section beneath the line.
+- Regression coverage verifies the copy, removed labels, retired Method pane, and section order. `git diff --check` and `bun run verify` passed; 14 test files and 61 tests are green.
+
+## task-explore-prices-navigation | 2026-07-10 14:36 | Restore hero timeline navigation
+
+- [x] Reproduce the broken Explore control with a deterministic regression test.
+- [x] Restore scrolling to the vertical sats line without conflicting with hash routing.
+- [x] Rename the control to “Explore prices in sats.”
+- [x] Run focused checks and `bun run verify`.
+
+### Completion review
+
+- Root cause: `HashRouter` and the raw `#timeline` anchor both used the URL fragment, so the in-page link did not reliably own scrolling.
+- The hero now uses a dedicated “Explore prices in sats” button that explicitly scrolls `#timeline` into view and respects reduced-motion preferences.
+- The red/green regression test passes. Browser verification reached `timelineTop ≈ 0` while preserving `#/`; `git diff --check` and `bun run verify` passed with 14 test files and 62 tests.
+
+## task-timeline-document-scroll | 2026-07-10 14:41 | Remove nested vertical timeline scrolling
+
+- [x] Reproduce and identify the timeline element that owns vertical overflow.
+- [x] Keep horizontal timeline overflow available without creating a vertical scroll container.
+- [x] Verify the document remains the only vertical scrolling surface.
+- [x] Run `bun run verify` and review the final diff.
+
+### Completion review
+
+- Root cause: positioned timeline content extended 15px beyond the stage; because the horizontal shell computed `overflow-y: auto`, 7px became a user-scrollable nested vertical range.
+- Clipping only the inner stage’s vertical paint overflow preserves horizontal overflow while reducing the shell’s vertical range to zero.
+- Browser verification passed at 1121, 1280, 1440, and 1920px. A wheel gesture over the line moved the document 600px while the shell stayed at `scrollTop = 0`.
+- The repo has no supported browser-test harness, so the CSS invariant is documented beside the rule and verified with the deterministic browser measurement. `git diff --check` and `bun run verify` passed with 14 test files and 62 tests.
