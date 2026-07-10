@@ -15,7 +15,11 @@ export function QuizFeedback(props: QuizFeedbackProps) {
           props.isCorrect ? "quiz-feedback--success" : "quiz-feedback--error"
         }`}
       >
-        <h3>{props.isCorrect ? "Nice — that is the right decade." : "Good miss. The scale is the lesson."}</h3>
+        <h3>
+          {props.isCorrect
+            ? "Nice — that is the right price range."
+            : "Good miss. The scale is the lesson."}
+        </h3>
         <p>{props.explanation}</p>
         <p>{props.extraLine}</p>
       </section>
