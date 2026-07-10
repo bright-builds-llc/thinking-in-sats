@@ -4,6 +4,8 @@ import { readFileSync } from "node:fs";
 import { defineConfig } from "vitest/config";
 import solid from "vite-plugin-solid";
 
+import { maybeCreateGitHubActionsRunUrl } from "./src/domain/buildProvenance";
+
 function maybeReadGitCommit(): string {
   try {
     return execSync("git rev-parse HEAD", { encoding: "utf8" }).trim();
@@ -44,6 +46,12 @@ const buildInfo = {
   version: readPackageVersion(),
   commit: maybeReadGitCommit(),
   builtAt: new Date().toISOString(),
+  maybeBuildRunUrl: maybeCreateGitHubActionsRunUrl({
+    maybePagesBasePath: process.env.PAGES_BASE_PATH,
+    maybeRepository: process.env.GITHUB_REPOSITORY,
+    maybeRunId: process.env.GITHUB_RUN_ID,
+    maybeServerUrl: process.env.GITHUB_SERVER_URL,
+  }),
 };
 
 const basePath = readBasePath();
@@ -54,6 +62,9 @@ export default defineConfig({
     "import.meta.env.VITE_APP_VERSION": JSON.stringify(buildInfo.version),
     "import.meta.env.VITE_GIT_COMMIT": JSON.stringify(buildInfo.commit),
     "import.meta.env.VITE_BUILD_TIMESTAMP": JSON.stringify(buildInfo.builtAt),
+    "import.meta.env.VITE_BUILD_RUN_URL": JSON.stringify(
+      buildInfo.maybeBuildRunUrl,
+    ),
   },
   plugins: [solid()],
   optimizeDeps: {

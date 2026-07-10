@@ -17,6 +17,9 @@ export function BuildInfoPanel(props: BuildInfoPanelProps) {
     return props.buildInfo.commit.slice(0, 8);
   };
   const commitUrl = () => `${repositoryUrl}/commit/${props.buildInfo.commit}`;
+  const isBuildRunAvailable = () =>
+    props.buildInfo.builtAt !== unavailableValue &&
+    props.buildInfo.maybeBuildRunUrl !== null;
 
   return (
     <section aria-label="Build information" class="build-info-panel">
@@ -31,7 +34,7 @@ export function BuildInfoPanel(props: BuildInfoPanelProps) {
             {isCommitAvailable() ? (
               <a
                 aria-label={`Commit ${props.buildInfo.commit} on GitHub`}
-                class="build-info-commit-link"
+                class="build-info-link"
                 href={commitUrl()}
                 rel="noreferrer"
                 target="_blank"
@@ -46,7 +49,21 @@ export function BuildInfoPanel(props: BuildInfoPanelProps) {
         </div>
         <div>
           <dt>Built</dt>
-          <dd>{props.buildInfo.builtAt}</dd>
+          <dd>
+            {isBuildRunAvailable() ? (
+              <a
+                aria-label={`Build from ${props.buildInfo.builtAt} on GitHub Actions`}
+                class="build-info-link"
+                href={props.buildInfo.maybeBuildRunUrl ?? undefined}
+                rel="noreferrer"
+                target="_blank"
+              >
+                {props.buildInfo.builtAt}
+              </a>
+            ) : (
+              props.buildInfo.builtAt
+            )}
+          </dd>
         </div>
       </dl>
     </section>

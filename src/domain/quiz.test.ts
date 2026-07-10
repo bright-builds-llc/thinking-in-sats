@@ -2,7 +2,11 @@ import { describe, expect, it } from "vitest";
 
 import type { EverydayItemWithSats } from "./itemTypes";
 import { itemCategoryLabels } from "./itemTypes";
-import { createQuizQuestion, evaluateQuizAnswer } from "./quiz";
+import {
+  createQuizQuestion,
+  createQuizSession,
+  evaluateQuizAnswer,
+} from "./quiz";
 
 const item: EverydayItemWithSats = {
   id: "chipotle-burrito",
@@ -114,5 +118,39 @@ describe("evaluateQuizAnswer", () => {
     expect(incorrectResult.isCorrect).toBe(false);
     expect(correctResult.correctChoice.id).toBe(correctChoiceId);
     expect(incorrectResult.correctChoice.id).toBe(correctChoiceId);
+  });
+});
+
+describe("createQuizSession", () => {
+  it("returns at most ten unique items", () => {
+    // Arrange
+    const items = Array.from({ length: 15 }, (_, index) => ({
+      ...item,
+      id: `item-${index}`,
+    }));
+
+    // Act
+    const session = createQuizSession(items, () => 0);
+
+    // Assert
+    expect(session).toHaveLength(10);
+    expect(new Set(session.map((sessionItem) => sessionItem.id)).size).toBe(10);
+  });
+
+  it("uses randomness when ordering a session", () => {
+    // Arrange
+    const items = Array.from({ length: 6 }, (_, index) => ({
+      ...item,
+      id: `item-${index}`,
+    }));
+
+    // Act
+    const unchangedSession = createQuizSession(items, () => 0.999);
+    const shuffledSession = createQuizSession(items, () => 0);
+
+    // Assert
+    expect(shuffledSession.map((sessionItem) => sessionItem.id)).not.toEqual(
+      unchangedSession.map((sessionItem) => sessionItem.id),
+    );
   });
 });

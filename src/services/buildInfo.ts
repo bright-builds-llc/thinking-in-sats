@@ -2,6 +2,7 @@ export type BuildInfo = {
   version: string;
   commit: string;
   builtAt: string;
+  maybeBuildRunUrl: string | null;
 };
 
 function maybeReadBuildEnv(name: string): string | undefined {
@@ -25,6 +26,7 @@ export function getBuildInfo(): BuildInfo {
     version: maybeReadBuildEnv("VITE_APP_VERSION") ?? "Unavailable",
     commit: maybeReadBuildEnv("VITE_GIT_COMMIT") ?? "Unavailable",
     builtAt: maybeReadBuildEnv("VITE_BUILD_TIMESTAMP") ?? "Unavailable",
+    maybeBuildRunUrl: maybeReadBuildEnv("VITE_BUILD_RUN_URL") ?? null,
   };
 }
 

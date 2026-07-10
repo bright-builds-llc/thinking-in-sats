@@ -1,18 +1,21 @@
-import { Show, batch, createMemo, createSignal } from "solid-js";
+import { Show, batch, createMemo, createSignal, untrack } from "solid-js";
 
 import type {
   EverydayItem,
   EverydayItemWithSats,
+  QuizAnswerRecord,
   QuizQuestionResult,
 } from "../domain/itemTypes";
 import {
   createQuizQuestion,
+  createQuizSession,
   evaluateQuizAnswer,
-  selectNextQuizItem,
 } from "../domain/quiz";
 import { deriveItemsWithSats } from "../domain/pricing";
+import { shareQuizScore } from "../services/quizShare";
 import type { QuoteState } from "../services/quoteStore";
 import {
+  QuizCompletion,
   QuizPageIntro,
   QuizQuestionLayout,
   QuizQuoteFallback,
@@ -63,10 +66,15 @@ function scrollQuestionCardIntoView(
 
 export function QuizPage(props: QuizPageProps) {
   let maybeQuizLayoutElement: HTMLDivElement | undefined;
+  const [sessionItems, setSessionItems] = createSignal<EverydayItem[]>(
+    createQuizSession(untrack(() => props.items)),
+  );
   const [questionIndex, setQuestionIndex] = createSignal(0);
-  const [maybePreviousItemId, setMaybePreviousItemId] = createSignal<
-    string | undefined
-  >(undefined);
+  const [answerRecords, setAnswerRecords] = createSignal<QuizAnswerRecord[]>([]);
+  const [isComplete, setIsComplete] = createSignal(false);
+  const [maybeShareStatus, setMaybeShareStatus] = createSignal<string | null>(
+    null,
+  );
   const [maybeSelectedChoiceId, setMaybeSelectedChoiceId] = createSignal<
     string | null
   >(null);
@@ -78,7 +86,7 @@ export function QuizPage(props: QuizPageProps) {
       return [] satisfies EverydayItemWithSats[];
     }
 
-    return deriveItemsWithSats(props.items, maybeQuote.usdPerBitcoin);
+    return deriveItemsWithSats(sessionItems(), maybeQuote.usdPerBitcoin);
   });
 
   const maybeCurrentItem = createMemo(() => {
@@ -88,11 +96,7 @@ export function QuizPage(props: QuizPageProps) {
       return null;
     }
 
-    return selectNextQuizItem(
-      items,
-      questionIndex(),
-      maybePreviousItemId(),
-    );
+    return items[questionIndex()] ?? null;
   });
 
   const maybeQuestion = createMemo(() => {
@@ -138,6 +142,10 @@ export function QuizPage(props: QuizPageProps) {
     return evaluateQuizAnswer(question, maybeSelectedChoiceIdValue);
   });
 
+  const correctAnswerCount = createMemo(
+    () => answerRecords().filter((answer) => answer.isCorrect).length,
+  );
+
   const handleChoiceSelect = (choiceId: string) => {
     if (maybeResult()) {
       return;
@@ -147,21 +155,78 @@ export function QuizPage(props: QuizPageProps) {
   };
 
   const handleNextQuestion = () => {
+    const result = maybeResult();
     const currentItem = maybeCurrentItem();
 
+    if (!result || !currentItem) {
+      return;
+    }
+
+    const hasMoreQuestions = questionIndex() + 1 < quizItems().length;
+    const answerRecord: QuizAnswerRecord = {
+      ...result,
+      item: currentItem,
+      questionNumber: questionIndex() + 1,
+    };
+
     batch(() => {
+      setAnswerRecords((currentAnswers) => [
+        ...currentAnswers,
+        answerRecord,
+      ]);
       setMaybeSelectedChoiceId(null);
+      setMaybeShareStatus(null);
 
-      if (currentItem) {
-        setMaybePreviousItemId(currentItem.id);
+      if (hasMoreQuestions) {
+        setQuestionIndex((currentValue) => currentValue + 1);
+      } else {
+        setIsComplete(true);
       }
+    });
 
-      setQuestionIndex((currentValue) => currentValue + 1);
+    if (hasMoreQuestions) {
+      queueMicrotask(() => {
+        scrollQuestionCardIntoView(maybeQuizLayoutElement);
+      });
+    }
+  };
+
+  const handleRestart = () => {
+    batch(() => {
+      setSessionItems(createQuizSession(props.items));
+      setQuestionIndex(0);
+      setAnswerRecords([]);
+      setIsComplete(false);
+      setMaybeSelectedChoiceId(null);
+      setMaybeShareStatus(null);
     });
 
     queueMicrotask(() => {
       scrollQuestionCardIntoView(maybeQuizLayoutElement);
     });
+  };
+
+  const handleShare = async () => {
+    const outcome = await shareQuizScore(
+      correctAnswerCount(),
+      quizItems().length,
+    );
+
+    if (outcome === "shared") {
+      setMaybeShareStatus("Score shared. Challenge sent!");
+      return;
+    }
+
+    if (outcome === "copied") {
+      setMaybeShareStatus("Challenge copied to your clipboard.");
+      return;
+    }
+
+    if (outcome === "unavailable") {
+      setMaybeShareStatus(
+        "Sharing is unavailable here. You can still copy this page's URL.",
+      );
+    }
   };
 
   const handleQuizLayoutRef = (element: HTMLDivElement) => {
@@ -173,21 +238,37 @@ export function QuizPage(props: QuizPageProps) {
       <QuizPageIntro />
 
       <Show
-        when={maybeQuizView()}
-        keyed
-        fallback={<QuizQuoteFallback />}
-      >
-        {(quizView) => (
-          <QuizQuestionLayout
-            maybeResult={maybeResult()}
-            maybeSelectedChoiceId={maybeSelectedChoiceId()}
-            onChoiceSelect={handleChoiceSelect}
-            onNextQuestion={handleNextQuestion}
-            onQuizLayoutRef={handleQuizLayoutRef}
-            questionIndex={questionIndex()}
-            quizView={quizView}
+        when={!isComplete()}
+        fallback={
+          <QuizCompletion
+            answerRecords={answerRecords()}
+            correctAnswers={correctAnswerCount()}
+            maybeShareStatus={maybeShareStatus()}
+            onRestart={handleRestart}
+            onShare={handleShare}
+            totalQuestions={quizItems().length}
           />
-        )}
+        }
+      >
+        <Show
+          when={maybeQuizView()}
+          keyed
+          fallback={<QuizQuoteFallback />}
+        >
+          {(quizView) => (
+            <QuizQuestionLayout
+              isLastQuestion={questionIndex() + 1 === quizItems().length}
+              maybeResult={maybeResult()}
+              maybeSelectedChoiceId={maybeSelectedChoiceId()}
+              onChoiceSelect={handleChoiceSelect}
+              onNextQuestion={handleNextQuestion}
+              onQuizLayoutRef={handleQuizLayoutRef}
+              questionIndex={questionIndex()}
+              totalQuestions={quizItems().length}
+              quizView={quizView}
+            />
+          )}
+        </Show>
       </Show>
     </section>
   );

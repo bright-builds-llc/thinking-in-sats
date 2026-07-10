@@ -30,6 +30,8 @@ const buildInfo: BuildInfo = {
   version: "0.1.0",
   commit: "abcdef1234567890",
   builtAt: "2026-04-08T00:00:00.000Z",
+  maybeBuildRunUrl:
+    "https://github.com/bright-builds-llc/thinking-in-sats/actions/runs/123456789",
 };
 
 describe("AppShell", () => {
@@ -130,14 +132,44 @@ describe("AppShell", () => {
       "title",
       "abcdef1234567890",
     );
-    expect(
-      within(buildRegion).getByText("2026-04-08T00:00:00.000Z"),
-    ).toBeInTheDocument();
+    const builtLink = within(buildRegion).getByRole("link", {
+      name: "Build from 2026-04-08T00:00:00.000Z on GitHub Actions",
+    });
+    expect(builtLink).toHaveTextContent("2026-04-08T00:00:00.000Z");
+    expect(builtLink).toHaveAttribute(
+      "href",
+      "https://github.com/bright-builds-llc/thinking-in-sats/actions/runs/123456789",
+    );
+    expect(builtLink).toHaveAttribute("target", "_blank");
     expect(
       within(buildRegion).queryByRole("button", {
         name: "Copy build summary",
       }),
     ).not.toBeInTheDocument();
+  });
+
+  it("keeps the build timestamp plain outside a GitHub Pages build", () => {
+    // Arrange
+    const localBuildInfo: BuildInfo = {
+      ...buildInfo,
+      maybeBuildRunUrl: null,
+    };
+
+    // Act
+    render(() => (
+      <AppShell buildInfo={localBuildInfo}>
+        <p>Route content</p>
+      </AppShell>
+    ));
+
+    // Assert
+    const buildRegion = screen.getByRole("region", {
+      name: "Build information",
+    });
+    const builtTimestamp = within(buildRegion).getByText(
+      "2026-04-08T00:00:00.000Z",
+    );
+    expect(builtTimestamp.closest("a")).toBeNull();
   });
 
   it("keeps unavailable build provenance fields visible", () => {
@@ -146,6 +178,7 @@ describe("AppShell", () => {
       version: "Unavailable",
       commit: "Unavailable",
       builtAt: "Unavailable",
+      maybeBuildRunUrl: null,
     };
 
     // Act

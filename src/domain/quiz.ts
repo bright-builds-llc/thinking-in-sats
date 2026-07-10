@@ -9,8 +9,10 @@ import { formatBtcAmount, formatSats } from "./formatting";
 export type { QuizChoiceView as QuizChoice, QuizQuestionResult };
 
 type CorrectChoiceRank = "lowest" | "middle" | "highest";
+type RandomSource = () => number;
 
 const correctChoiceRanks: CorrectChoiceRank[] = ["lowest", "middle", "highest"];
+export const maximumQuizQuestionCount = 10;
 
 const choiceFactorsByRank: Record<
   CorrectChoiceRank,
@@ -133,23 +135,20 @@ function buildChoiceValues(itemId: string, correctSats: number): number[] {
   throw new Error("Quiz question generation failed.");
 }
 
-export function selectNextQuizItem(
-  items: EverydayItemWithSats[],
-  questionIndex: number,
-  maybePreviousItemId?: string,
-): EverydayItemWithSats {
-  if (items.length === 0) {
-    throw new Error("Quiz items are required.");
+export function createQuizSession<Item>(
+  items: readonly Item[],
+  random: RandomSource = Math.random,
+): Item[] {
+  const shuffledItems = [...items];
+
+  for (let index = shuffledItems.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(random() * (index + 1));
+    const nextItem = shuffledItems[index];
+    shuffledItems[index] = shuffledItems[swapIndex];
+    shuffledItems[swapIndex] = nextItem;
   }
 
-  const candidateIndex = (questionIndex * 7 + 3) % items.length;
-  const candidateItem = items[candidateIndex];
-
-  if (items.length === 1 || candidateItem.id !== maybePreviousItemId) {
-    return candidateItem;
-  }
-
-  return items[(candidateIndex + 1) % items.length];
+  return shuffledItems.slice(0, maximumQuizQuestionCount);
 }
 
 export function createQuizQuestion(item: EverydayItemWithSats): QuizQuestion {

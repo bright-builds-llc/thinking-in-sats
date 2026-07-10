@@ -176,3 +176,62 @@
 - Clipping only the inner stage’s vertical paint overflow preserves horizontal overflow while reducing the shell’s vertical range to zero.
 - Browser verification passed at 1121, 1280, 1440, and 1920px. A wheel gesture over the line moved the document 600px while the shell stayed at `scrollTop = 0`.
 - The repo has no supported browser-test harness, so the CSS invariant is documented beside the rule and verified with the deterministic browser measurement. `git diff --check` and `bun run verify` passed with 14 test files and 62 tests.
+
+## task-randomized-quiz-session | 2026-07-10 15:00 | Add bounded random quiz sessions and results
+
+- [x] Randomize quiz items without repeats for each session.
+- [x] Cap each session at 10 questions or the number of available items.
+- [x] Track correct answers and show a polished completion screen with score and percentage.
+- [x] Add native sharing with a clipboard fallback and a fresh-session restart action.
+- [x] Add regression coverage, browser-check the completion flow, and run `bun run verify`.
+
+### Completion review
+
+- The old quiz randomized answer choices but used a deterministic item sequence. Sessions now use a Fisher–Yates shuffle, contain no repeated items, and stop at 10 questions or the available item count.
+- Correct answers accumulate through the round. The completion screen shows the exact score, percentage, tailored encouragement, a challenge prompt, Share, and Play again.
+- Sharing uses the native share sheet when available and copies the score challenge plus `#/quiz` link otherwise. Restart creates a fresh randomized session.
+- Browser verification completed 10 unique questions, matched the displayed score to observed answers, and passed desktop/mobile layout checks with no horizontal overflow. `git diff --check` and `bun run verify` passed with 16 test files and 69 tests.
+
+## task-quiz-score-effects | 2026-07-10 15:35 | Add score halo and high-score lightning
+
+- [x] Add a circular animated halo around every completion score.
+- [x] Adapt procedural branched lightning from thunderhead-storm-lab for scores above 8/10.
+- [x] Disable score-screen animation for reduced-motion users.
+- [x] Change perfect-score encouragement to “Perfect score! Now you're Thinking In Sats!”
+- [x] Add regression coverage, browser-check the high-score experience on desktop/mobile, and run `bun run verify`.
+
+### Completion review
+
+- Every completion score now has a rotating outer ring and softly pulsing second halo. Scores of 9/10 and 10/10 add a decorative canvas with randomized jagged paths, branches, layered glow, and brief screen flashes adapted from the local storm-lab technique.
+- The procedural effect has no added dependency, stays behind the score content, and is hidden for reduced-motion users; the halo also becomes static under reduced motion.
+- Component coverage verifies the halo, the inclusive 9/10 activation boundary, the exact perfect-score message, and reduced-motion behavior.
+- Browser verification passed at 1280px and 390px with active lightning, centered halo, correct perfect-score copy, and no horizontal overflow. Reduced-motion emulation reported hidden lightning and no halo animations. `git diff --check` and `bun run verify` passed with 17 test files and 73 tests.
+
+## task-quiz-answer-report | 2026-07-10 15:51 | Add a learn-from-mistakes quiz report
+
+- [x] Preserve each completed question, selected answer, and correct answer through the round.
+- [x] Add an accessible expandable report beneath the completion score.
+- [x] Clearly distinguish correct answers from questions worth revisiting.
+- [x] Include the selected range, correct range, and approximate USD anchor for every item.
+- [x] Add regression coverage, browser-check desktop/mobile behavior, and run `bun run verify`.
+
+### Completion review
+
+- Each submitted answer is now stored as a typed record containing its question number, item snapshot, selected choice, correct choice, and outcome. The score is derived from that same history so the completion total and report cannot diverge.
+- A collapsed native details card beneath the score opens into the full ordered round. Each entry shows the item context, learner choice, correct price range, BTC values, approximate dollar anchor, and a clear Correct or Review this one state.
+- Play again clears the prior answer history along with the score. Regression coverage verifies exact answer preservation, ordered report rendering, result labels, dollar anchors, collapsed-by-default behavior, and restart cleanup.
+- Browser verification passed with ten entries and a 5/5 correct-versus-missed split at 1280px and 390px. Mobile answer comparisons stack to one column, and neither viewport has horizontal overflow. `git diff --check` and `bun run verify` passed with 17 test files and 74 tests.
+
+## task-footer-build-run-link | 2026-07-10 16:02 | Link Pages build timestamps to GitHub Actions
+
+- [x] Derive an exact GitHub Actions run URL only for GitHub Pages builds.
+- [x] Carry the optional run URL through the build provenance model.
+- [x] Link the Built timestamp when a run URL exists and keep local timestamps plain.
+- [x] Add focused regression coverage and run `bun run verify`.
+
+### Completion review
+
+- Pages builds now combine `GITHUB_SERVER_URL`, `GITHUB_REPOSITORY`, and `GITHUB_RUN_ID` into the exact Actions run URL only when `PAGES_BASE_PATH` is present. Missing or malformed build metadata safely produces no URL.
+- The optional run URL travels through the existing Vite build constants and `BuildInfo` model. The footer renders the Built timestamp as an accessible external link when available and plain text otherwise.
+- A simulated Pages production build embedded `https://github.com/bright-builds-llc/thinking-in-sats/actions/runs/123456789`; the subsequent normal build contained no Actions run URL.
+- Focused domain and footer coverage passes. `git diff --check` and `bun run verify` passed with 18 test files and 79 tests.

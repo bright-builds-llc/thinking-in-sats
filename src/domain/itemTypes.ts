@@ -73,4 +73,9 @@ export type QuizQuestionResult = {
   correctChoice: QuizChoiceView;
 };
 
+export type QuizAnswerRecord = QuizQuestionResult & {
+  item: EverydayItemWithSats;
+  questionNumber: number;
+};
+
 export type ItemSnapshot = EverydayItemWithSats;
