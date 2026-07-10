@@ -86,7 +86,6 @@
 
 .timeline-scale {
   position: absolute;
-  z-index: 0;
   inset: 0;
 }
 
@@ -120,11 +119,39 @@
 }
 
 .timeline-scale__label {
+  position: relative;
+  z-index: 4;
   margin: 0 0.7rem;
   padding: 0.25rem 0.6rem;
   border-radius: var(--radius-pill);
-  background: rgb(8 8 8 / 0.92);
+  background: rgb(8 8 8 / 0.98);
   border: 1px solid var(--color-border-subtle);
+}
+
+.timeline-scale__break {
+  position: absolute;
+  left: 50%;
+  z-index: 3;
+  display: grid;
+  width: 1.65rem;
+  height: 1.65rem;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border-radius: 0.2rem;
+  background: var(--color-surface-elevated);
+  pointer-events: none;
+}
+
+.timeline-scale__break svg {
+  width: 1.35rem;
+  height: 1.2rem;
+  overflow: visible;
+}
+
+.timeline-scale__break polyline {
+  fill: none;
+  stroke: rgb(255 172 108 / 0.9);
+  stroke-width: 2;
 }
 
 .timeline-item {

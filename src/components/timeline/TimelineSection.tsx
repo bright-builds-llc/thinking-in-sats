@@ -32,7 +32,7 @@ export function TimelineSection(props: TimelineSectionProps) {
   const readingHelpCopy = createMemo(() =>
     props.isMobileLayout
       ? "On smaller screens the cards switch to a spaced list in sats order so every anchor stays readable."
-      : "Each anchor keeps its logarithmic position while its card moves within a lane when needed to stay readable.",
+      : "Positions are logarithmic within each uninterrupted segment. Zigzags compress unusually empty ranges, and cards move within lanes when needed to stay readable.",
   );
 
   return (
@@ -84,7 +84,10 @@ export function TimelineSection(props: TimelineSectionProps) {
                 }}
               >
                 <div class="timeline-spine" aria-hidden="true" />
-                <TimelineScale markers={layout().marks} />
+                <TimelineScale
+                  breaks={layout().breaks}
+                  markers={layout().marks}
+                />
                 <For each={layout().placements}>
                   {(placement) => <TimelineItemCard placement={placement} />}
                 </For>

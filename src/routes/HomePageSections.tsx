@@ -252,8 +252,8 @@ export function TimelineVisualizationSection(props: TimelineVisualizationProps) 
         </h2>
         <p class="quote-meta">
           Scroll from everyday pocket change all the way toward meaningful
-          monthly commitments. Every item sits on a true logarithmic position,
-          even when its card moves within a lane to stay readable.
+          monthly commitments. Positions are logarithmic within uninterrupted
+          segments; zigzags compress unusually empty ranges.
         </p>
       </div>
       <Show

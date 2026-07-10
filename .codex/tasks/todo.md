@@ -120,3 +120,18 @@
 - Evidence: desktop geometry passed at 1121, 1280, 1440, and 1920 px with 32 in-bounds cards, seven distinct ticks, zero same-lane overlaps, and connector endpoints within 1 px.
 - Mobile controls passed at 1120, 768, and 390 px with no overlap or horizontal overflow.
 - Verification: `git diff --check` and `bun run verify` passed; 13 test files and 47 tests are green.
+
+## task-desktop-timeline-breaks | 2026-07-10 11:38 | Compress sparse desktop timeline ranges
+
+- [x] Confirm automatic break behavior, a 30rem inclusive threshold, an 8rem target, and spine zigzag styling.
+- [x] Add failing unit tests for break detection, compression, protected decade markers, and capacity safeguards.
+- [x] Implement piecewise axis compression and decorative desktop zigzags.
+- [x] Raise decade labels above chart lines without changing card-badge layering.
+- [x] Verify desktop and mobile geometry, then run `bun run verify` and review the final diff.
+
+### Completion review
+
+- At a fixed $100k quote, the layout produces the expected three breaks and compresses the desktop stage to about 264.7rem.
+- Desktop geometry passed at 1121, 1280, 1440, and 1920 px with 32 in-bounds cards, zero same-lane overlaps, three visible zigzags, and connector endpoints within 1 px.
+- Mobile controls passed at 1120, 768, and 390 px with list flow unchanged, no breaks or connectors, and no overlap or horizontal overflow.
+- Visual review confirmed opaque spine interruptions and decade-label pills above crossing lines. `git diff --check` and `bun run verify` passed; 14 test files and 57 tests are green.
