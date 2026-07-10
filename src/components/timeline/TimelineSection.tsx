@@ -5,7 +5,7 @@ import {
   MysticNumberTicker,
   MysticSurface,
 } from "../mystic/MysticVisual";
-import { buildTimelineMarks, buildTimelinePlacements } from "../../domain/timelineLayout";
+import { buildTimelineLayout } from "../../domain/timelineLayout";
 import type { EverydayItemWithSats } from "../../domain/itemTypes";
 import { TimelineItemCard } from "./TimelineItemCard";
 import { TimelineScale } from "./TimelineScale";
@@ -23,25 +23,16 @@ const wholeNumberFormatter = new Intl.NumberFormat("en-US", {
 });
 
 export function TimelineSection(props: TimelineSectionProps) {
-  const placements = createMemo(() =>
-    buildTimelinePlacements(
+  const layout = createMemo(() =>
+    buildTimelineLayout(
       props.items,
       props.isMobileLayout ? "mobile" : "desktop",
     ),
   );
-  const marks = createMemo(() => {
-    const items = props.items;
-
-    if (items.length === 0) {
-      return [];
-    }
-
-    return buildTimelineMarks(items[0].satValue, items[items.length - 1].satValue);
-  });
   const readingHelpCopy = createMemo(() =>
     props.isMobileLayout
       ? "On smaller screens the cards switch to a spaced list in sats order so every anchor stays readable."
-      : "Each card sits on a logarithmic position, then shifts slightly when needed so neighboring labels stay readable.",
+      : "Each anchor keeps its logarithmic position while its card moves within a lane when needed to stay readable.",
   );
 
   return (
@@ -89,12 +80,12 @@ export function TimelineSection(props: TimelineSectionProps) {
               <div
                 class="timeline-scroll timeline-stage"
                 style={{
-                  "--timeline-decades": `${Math.max(1, marks().length)}`,
+                  height: `${layout().stageHeightRem}rem`,
                 }}
               >
                 <div class="timeline-spine" aria-hidden="true" />
-                <TimelineScale markers={marks()} />
-                <For each={placements()}>
+                <TimelineScale markers={layout().marks} />
+                <For each={layout().placements}>
                   {(placement) => <TimelineItemCard placement={placement} />}
                 </For>
               </div>
@@ -102,7 +93,7 @@ export function TimelineSection(props: TimelineSectionProps) {
           }
         >
           <div class="timeline-mobile-list">
-            <For each={placements()}>
+            <For each={layout().placements}>
               {(placement) => <TimelineItemCard placement={placement} isMobileList />}
             </For>
           </div>

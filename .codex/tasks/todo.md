@@ -104,3 +104,19 @@
 - Completed 2026-06-20 19:27 CDT.
 - Evidence: `AGENTS.md` now has concise repo-local guidance after the managed Bright Builds block.
 - Verification: `standards-overrides.md` remains unchanged; final diff review confirms managed Bright Builds block text was not edited.
+
+## task-desktop-timeline-geometry | 2026-07-10 11:05 | Repair desktop vertical sats line
+
+- [x] Reproduce the desktop geometry failures with a deterministic browser signal.
+- [x] Add failing regression tests for the shared logarithmic domain and dense placement behavior.
+- [x] Implement a unified timeline layout model and repair desktop rendering.
+- [x] Verify desktop geometry at the breakpoint boundary and representative desktop widths.
+- [x] Run `bun run verify` and review the final diff.
+
+### Completion review
+
+- Completed 2026-07-10 11:23 CDT.
+- Root causes: the scale had no resolved height; marker and item positions used different logarithmic domains; global normalized spacing could not fit 32 cards; connectors mixed stage-relative and card-relative coordinates.
+- Evidence: desktop geometry passed at 1121, 1280, 1440, and 1920 px with 32 in-bounds cards, seven distinct ticks, zero same-lane overlaps, and connector endpoints within 1 px.
+- Mobile controls passed at 1120, 768, and 390 px with no overlap or horizontal overflow.
+- Verification: `git diff --check` and `bun run verify` passed; 13 test files and 47 tests are green.

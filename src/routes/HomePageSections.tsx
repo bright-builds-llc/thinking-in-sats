@@ -253,7 +253,7 @@ export function TimelineVisualizationSection(props: TimelineVisualizationProps) 
         <p class="quote-meta">
           Scroll from everyday pocket change all the way toward meaningful
           monthly commitments. Every item sits on a true logarithmic position,
-          even if the cards slide slightly to stay readable.
+          even when its card moves within a lane to stay readable.
         </p>
       </div>
       <Show

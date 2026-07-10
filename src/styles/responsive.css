@@ -34,6 +34,7 @@
     width: 100%;
     padding: 0;
     justify-items: stretch;
+    transform: none;
   }
 
   .timeline-mobile-list .timeline-item--list::before {

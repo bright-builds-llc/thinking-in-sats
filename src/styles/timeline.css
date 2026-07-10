@@ -61,14 +61,16 @@
 }
 
 .timeline-stage {
+  --timeline-lane-width: min(22rem, calc(50% - 2rem));
+  --timeline-connector-offset: calc(var(--timeline-lane-width) - 1.5rem);
+
+  isolation: isolate;
   position: relative;
   min-width: 100%;
 }
 
 .timeline-scroll {
   position: relative;
-  min-height: max(44rem, calc(7.5rem * var(--timeline-decades, 8)));
-  padding-bottom: 10rem;
 }
 
 .timeline-spine {
@@ -83,20 +85,30 @@
 }
 
 .timeline-scale {
-  position: relative;
-  height: 100%;
+  position: absolute;
+  z-index: 0;
+  inset: 0;
 }
 
 .timeline-scale__tick {
   position: absolute;
   left: 0;
   right: 0;
+  height: 1px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--color-text-muted);
   font-size: 0.78rem;
   pointer-events: none;
+}
+
+.timeline-scale__tick:first-child .timeline-scale__label {
+  transform: translateY(50%);
+}
+
+.timeline-scale__tick:last-child .timeline-scale__label {
+  transform: translateY(-50%);
 }
 
 .timeline-scale__tick::before,
@@ -117,9 +129,11 @@
 
 .timeline-item {
   position: absolute;
-  width: min(22rem, calc(50% - 2rem));
+  z-index: 2;
+  width: var(--timeline-lane-width);
   display: grid;
   gap: 0.65rem;
+  transform: translateY(-50%);
 }
 
 .timeline-item--left {
@@ -141,22 +155,39 @@
 
 .timeline-item__connector {
   position: absolute;
-  top: calc(var(--connector-anchor, 50%) - 1px);
-  width: 1.5rem;
-  height: 2px;
-  background: linear-gradient(90deg, rgb(255 211 171 / 0.16), rgb(255 149 84 / 0.5));
+  z-index: 1;
+  width: calc(50% - var(--timeline-connector-offset));
+  min-height: 2px;
+  overflow: visible;
+  pointer-events: none;
 }
 
-.timeline-item--left .timeline-item__connector {
-  right: 0;
+.timeline-item__connector--left {
+  left: var(--timeline-connector-offset);
 }
 
-.timeline-item--right .timeline-item__connector {
-  left: 0;
+.timeline-item__connector--right {
+  left: 50%;
 }
 
-.timeline-item--center .timeline-item__connector {
-  left: 0;
+.timeline-item__connector polyline {
+  fill: none;
+  stroke: rgb(255 149 84 / 0.5);
+  stroke-width: 2;
+}
+
+.timeline-item__anchor {
+  position: absolute;
+  left: 50%;
+  z-index: 2;
+  width: 0.55rem;
+  height: 0.55rem;
+  border: 1px solid rgb(255 201 157 / 0.82);
+  border-radius: 50%;
+  background: var(--color-surface-elevated);
+  box-shadow: 0 0 0 0.18rem rgb(255 149 84 / 0.12);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
 }
 
 .timeline-card {

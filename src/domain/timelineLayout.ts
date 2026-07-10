@@ -1,5 +1,6 @@
 import type {
   EverydayItemWithSats,
+  TimelineLane,
   TimelineMark,
   TimelinePlacement,
 } from "./itemTypes";
@@ -7,122 +8,248 @@ import { formatSatRangeLabel } from "./formatting";
 
 export type TimelineMode = "desktop" | "mobile";
 
-const minimumGapByMode: Record<TimelineMode, number> = {
-  desktop: 0.09,
-  mobile: 0.11,
+export type TimelineLayout = {
+  marks: TimelineMark[];
+  placements: TimelinePlacement[];
+  stageHeightRem: number;
 };
+
+type TimelineDomain = {
+  maximumLog: number;
+  minimumLog: number;
+};
+
+type PositionBlock = {
+  endIndex: number;
+  mean: number;
+  startIndex: number;
+  weight: number;
+};
+
+const desktopCardSlotRem = 14.5;
+// Extra stage room keeps dense lanes from turning into uniform rows with long connector detours.
+const desktopDensitySlack = 1.5;
+const desktopDecadeHeightRem = 12;
+const desktopMinimumStageHeightRem = 44;
 
 function toLogPosition(sats: number): number {
   return Math.log10(Math.max(1, sats));
 }
 
-function normalizePosition(value: number, minValue: number, maxValue: number): number {
-  if (maxValue <= minValue) {
-    return 0.5;
-  }
-
-  return (value - minValue) / (maxValue - minValue);
-}
-
-function clampPosition(position: number): number {
-  return Math.min(1, Math.max(0, position));
-}
-
-function resolveDisplayPositions(
-  exactPositions: number[],
-  minimumGap: number,
-): number[] {
-  if (exactPositions.length === 0) {
-    return [];
-  }
-
-  const displayPositions = [...exactPositions];
-
-  for (let index = 1; index < displayPositions.length; index += 1) {
-    const minimumAllowed = displayPositions[index - 1] + minimumGap;
-
-    if (displayPositions[index] < minimumAllowed) {
-      displayPositions[index] = minimumAllowed;
-    }
-  }
-
-  const overflow = displayPositions[displayPositions.length - 1] - 1;
-
-  if (overflow > 0) {
-    for (let index = displayPositions.length - 1; index >= 0; index -= 1) {
-      displayPositions[index] -= overflow;
-
-      if (index < displayPositions.length - 1) {
-        const maximumAllowed = displayPositions[index + 1] - minimumGap;
-        displayPositions[index] = Math.min(displayPositions[index], maximumAllowed);
-      }
-    }
-  }
-
-  const underflow = displayPositions[0];
-
-  if (underflow < 0) {
-    for (let index = 0; index < displayPositions.length; index += 1) {
-      displayPositions[index] -= underflow;
-    }
-  }
-
-  return displayPositions.map(clampPosition);
-}
-
-function laneForIndex(index: number, mode: TimelineMode) {
-  if (mode === "mobile") {
-    return "center" as const;
-  }
-
-  return index % 2 === 0 ? ("left" as const) : ("right" as const);
-}
-
-export function buildTimelineMarks(
+function buildTimelineDomain(
   minimumSats: number,
   maximumSats: number,
-): TimelineMark[] {
-  const minimumExponent = Math.floor(toLogPosition(minimumSats));
-  const maximumExponent = Math.ceil(toLogPosition(maximumSats));
+): TimelineDomain {
+  const minimumLog = Math.floor(toLogPosition(minimumSats));
+  const maximumLog = Math.max(
+    minimumLog + 1,
+    Math.ceil(toLogPosition(maximumSats)),
+  );
+
+  return { maximumLog, minimumLog };
+}
+
+function normalizePosition(value: number, domain: TimelineDomain): number {
+  return (
+    (value - domain.minimumLog) /
+    (domain.maximumLog - domain.minimumLog)
+  );
+}
+
+function clampPosition(
+  position: number,
+  minimumPosition: number,
+  maximumPosition: number,
+): number {
+  return Math.min(maximumPosition, Math.max(minimumPosition, position));
+}
+
+function laneForIndex(index: number, mode: TimelineMode): TimelineLane {
+  if (mode === "mobile") {
+    return "center";
+  }
+
+  return index % 2 === 0 ? "left" : "right";
+}
+
+function buildMarksForDomain(domain: TimelineDomain): TimelineMark[] {
   const marks: TimelineMark[] = [];
 
-  for (let exponent = minimumExponent; exponent <= maximumExponent; exponent += 1) {
+  for (
+    let exponent = domain.minimumLog;
+    exponent <= domain.maximumLog;
+    exponent += 1
+  ) {
     const valueSats = 10 ** exponent;
     marks.push({
       valueSats,
       label: formatSatRangeLabel(valueSats),
-      position: normalizePosition(exponent, minimumExponent, maximumExponent),
+      position: normalizePosition(exponent, domain),
     });
   }
 
   return marks;
 }
 
-export function buildTimelinePlacements(
+function buildDesktopStageHeightRem(
+  placements: TimelinePlacement[],
+  domain: TimelineDomain,
+): number {
+  const leftLaneCount = placements.filter(
+    (placement) => placement.lane === "left",
+  ).length;
+  const rightLaneCount = placements.filter(
+    (placement) => placement.lane === "right",
+  ).length;
+  const maximumLaneCount = Math.max(1, leftLaneCount, rightLaneCount);
+  const densityHeightRem =
+    maximumLaneCount * desktopCardSlotRem * desktopDensitySlack;
+  const decadeHeightRem =
+    (domain.maximumLog - domain.minimumLog) * desktopDecadeHeightRem;
+
+  return Math.max(
+    desktopMinimumStageHeightRem,
+    densityHeightRem,
+    decadeHeightRem,
+  );
+}
+
+function resolveLaneDisplayPositions(
+  exactPositions: number[],
+  stageHeightRem: number,
+): number[] {
+  if (exactPositions.length === 0) {
+    return [];
+  }
+
+  const minimumGap = desktopCardSlotRem / stageHeightRem;
+  const edgePadding = minimumGap / 2;
+  const minimumPosition = edgePadding;
+  const maximumPosition = 1 - edgePadding;
+  const boundedExactPositions = exactPositions.map((position) =>
+    clampPosition(position, minimumPosition, maximumPosition),
+  );
+  const positionBlocks: PositionBlock[] = [];
+
+  // Removing the required gap turns collision avoidance into an isotonic fit,
+  // which keeps cards as close as possible to their exact logarithmic anchors.
+  boundedExactPositions.forEach((position, index) => {
+    positionBlocks.push({
+      endIndex: index,
+      mean: position - index * minimumGap,
+      startIndex: index,
+      weight: 1,
+    });
+
+    while (
+      positionBlocks.length > 1 &&
+      positionBlocks[positionBlocks.length - 2].mean >
+        positionBlocks[positionBlocks.length - 1].mean
+    ) {
+      const leftBlock = positionBlocks[positionBlocks.length - 2];
+      const rightBlock = positionBlocks[positionBlocks.length - 1];
+      const weight = leftBlock.weight + rightBlock.weight;
+
+      positionBlocks.splice(positionBlocks.length - 2, 2, {
+        endIndex: rightBlock.endIndex,
+        mean:
+          (leftBlock.mean * leftBlock.weight +
+            rightBlock.mean * rightBlock.weight) /
+          weight,
+        startIndex: leftBlock.startIndex,
+        weight,
+      });
+    }
+  });
+
+  const displayPositions = new Array<number>(exactPositions.length);
+
+  for (const block of positionBlocks) {
+    for (let index = block.startIndex; index <= block.endIndex; index += 1) {
+      displayPositions[index] = block.mean + index * minimumGap;
+    }
+  }
+
+  const minimumShift = minimumPosition - displayPositions[0];
+  const maximumShift =
+    maximumPosition - displayPositions[displayPositions.length - 1];
+
+  if (minimumShift > maximumShift + Number.EPSILON * 16) {
+    throw new Error("Desktop timeline stage cannot fit its lane placements.");
+  }
+
+  const boundedShift = clampPosition(0, minimumShift, maximumShift);
+
+  return displayPositions.map((position) => position + boundedShift);
+}
+
+function resolveDesktopPlacements(
+  placements: TimelinePlacement[],
+  stageHeightRem: number,
+): TimelinePlacement[] {
+  const resolvedPlacements = placements.map((placement) => ({ ...placement }));
+
+  for (const lane of ["left", "right"] as const) {
+    const laneIndexes = resolvedPlacements.flatMap((placement, index) =>
+      placement.lane === lane ? [index] : [],
+    );
+    const displayPositions = resolveLaneDisplayPositions(
+      laneIndexes.map(
+        (placementIndex) =>
+          resolvedPlacements[placementIndex].exactPosition,
+      ),
+      stageHeightRem,
+    );
+
+    laneIndexes.forEach((placementIndex, laneIndex) => {
+      resolvedPlacements[placementIndex].displayPosition =
+        displayPositions[laneIndex];
+    });
+  }
+
+  return resolvedPlacements;
+}
+
+export function buildTimelineLayout(
   items: EverydayItemWithSats[],
   mode: TimelineMode,
-): TimelinePlacement[] {
+): TimelineLayout {
   if (items.length === 0) {
-    return [];
+    return {
+      marks: [],
+      placements: [],
+      stageHeightRem: desktopMinimumStageHeightRem,
+    };
   }
 
   const sortedItems = [...items].sort(
     (leftItem, rightItem) => leftItem.satValue - rightItem.satValue,
   );
-  const minimumLog = toLogPosition(sortedItems[0].satValue);
-  const maximumLog = toLogPosition(sortedItems[sortedItems.length - 1].satValue);
-  const exactPositions = sortedItems.map((item) =>
-    normalizePosition(toLogPosition(item.satValue), minimumLog, maximumLog),
+  const domain = buildTimelineDomain(
+    sortedItems[0].satValue,
+    sortedItems[sortedItems.length - 1].satValue,
   );
-  const displayPositions = resolveDisplayPositions(
-    exactPositions,
-    minimumGapByMode[mode],
-  );
+  const placements = sortedItems.map((item, index) => {
+    const exactPosition = normalizePosition(
+      toLogPosition(item.satValue),
+      domain,
+    );
 
-  return sortedItems.map((item, index) => ({
-    item,
-    exactPosition: exactPositions[index],
-    displayPosition: displayPositions[index],
-    lane: laneForIndex(index, mode),
-  }));
+    return {
+      item,
+      exactPosition,
+      displayPosition: exactPosition,
+      lane: laneForIndex(index, mode),
+    };
+  });
+  const stageHeightRem = buildDesktopStageHeightRem(placements, domain);
+
+  return {
+    marks: buildMarksForDomain(domain),
+    placements:
+      mode === "desktop"
+        ? resolveDesktopPlacements(placements, stageHeightRem)
+        : placements,
+    stageHeightRem,
+  };
 }
