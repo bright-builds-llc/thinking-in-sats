@@ -1,6 +1,7 @@
 import { For, createSignal, onCleanup, onMount } from "solid-js";
 
 import { createLightningParticleSystem } from "./lightningParticles";
+import { createLightningHaptics } from "./lightningHaptics";
 import { observeLightningGestures } from "./observeLightningGestures";
 import { createViewportLightningStrike } from "./viewportLightningStrike";
 
@@ -16,6 +17,7 @@ export function GlobalLightningEasterEgg() {
   let maybeCanvas: HTMLCanvasElement | undefined;
   const shouldAnimate = !prefersReducedMotion();
   const [isStrikeActive, setIsStrikeActive] = createSignal(false);
+  const haptics = createLightningHaptics();
   const particleSystem = createLightningParticleSystem(shouldAnimate);
   const viewportStrike = createViewportLightningStrike({
     maybeCanvas: () => maybeCanvas,
@@ -25,14 +27,21 @@ export function GlobalLightningEasterEgg() {
 
   onMount(() => {
     const stopObserving = observeLightningGestures({
-      onParticleTap: (tap) => particleSystem.emit(tap.x, tap.y),
-      onStrike: viewportStrike.trigger,
+      onParticleTap: (tap) => {
+        particleSystem.emit(tap.x, tap.y);
+        haptics.tap();
+      },
+      onStrike: () => {
+        viewportStrike.trigger();
+        haptics.strike();
+      },
     });
 
     onCleanup(stopObserving);
   });
 
   onCleanup(() => {
+    haptics.dispose();
     particleSystem.dispose();
     viewportStrike.dispose();
   });

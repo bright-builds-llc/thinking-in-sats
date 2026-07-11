@@ -284,3 +284,19 @@
 - Eligibility is captured on `pointerdown` and shared by emoji emission, the rolling five-tap counter, and five-finger validation. A foreground contact neither emits nor advances a gesture, and one foreground finger invalidates the group when it first reaches five contacts.
 - Browser verification at 390×844 confirmed one header-copy click emitted a particle, panel and Menu clicks emitted none, the Menu still worked, and five rapid shell-background clicks emitted five particles plus the full-screen strike without horizontal overflow.
 - Focused coverage passed with 19 tests. `git diff --check` and `bun run verify` passed with 22 test files and 102 tests.
+
+## task-progressive-lightning-haptics | 2026-07-10 19:24 | Add progressive haptic feedback
+
+- [x] Add a disposable haptic controller with light tap and stronger strike patterns.
+- [x] Prefer the Vibration API and fall back to the legacy hidden-switch technique on touch devices.
+- [x] Coalesce simultaneous feedback so a full strike takes priority over its triggering emoji tap.
+- [x] Wire haptics only into qualifying global easter-egg particles and strikes.
+- [x] Add regression coverage, browser-check the integration, and run `bun run verify`.
+
+### Completion review
+
+- Qualifying emoji taps request a 12ms vibration, while full-screen strikes request `[35, 30, 70]`. A microtask-level priority queue collapses feedback from the fifth rapid tap into the stronger strike instead of letting the tap cancel it.
+- Supported browsers use `navigator.vibrate`. Touch devices without a successful vibration call receive the best-effort legacy path: an ephemeral hidden label and `<input type="checkbox" switch>` are attached, clicked, and immediately removed. Legacy strikes schedule a second tick after 80ms, and disposal clears it.
+- Haptics share the existing background/header eligibility boundary. Panels, controls, drags, and canceled gestures remain silent; five-finger contact requests an immediate strike followed by individual release feedback. Reduced-motion visuals remain static while haptics continue to follow OS settings.
+- Chromium browser instrumentation at 390×844 recorded `12, 12, 12, 12, [35, 30, 70]` for five rapid background taps. Header copy added one tap request; hero-panel and Menu clicks added none, the Menu still opened, and reduced-motion mode recorded one tap with a static particle.
+- Current Safari may silently no-op because WebKit patched programmatic switch-label haptics; no physical iPhone was available for a meaningful tactile check. `git diff --check` and `bun run verify` passed with 23 test files and 111 tests.
