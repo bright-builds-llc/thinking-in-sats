@@ -234,7 +234,10 @@ export function QuizPage(props: QuizPageProps) {
   };
 
   return (
-    <section class="page quiz-page">
+    <section
+      class="page quiz-page"
+      data-lightning-gesture-region="background"
+    >
       <QuizPageIntro />
 
       <Show

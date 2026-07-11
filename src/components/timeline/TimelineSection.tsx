@@ -36,8 +36,11 @@ export function TimelineSection(props: TimelineSectionProps) {
   );
 
   return (
-    <section class="timeline-section">
-      <div class="timeline-help">
+    <section
+      class="timeline-section"
+      data-lightning-gesture-region="background"
+    >
+      <div class="timeline-help" data-lightning-gesture-region="background">
         <MysticSurface as="article" class="surface-card timeline-stat-card">
           <h3>Current BTC anchor</h3>
           <p>{props.maybeCurrentQuoteLabel ?? "Unavailable"}</p>

@@ -1,4 +1,5 @@
 import type { JSX } from "solid-js";
+import { GlobalLightningEasterEgg } from "../effects/GlobalLightningEasterEgg";
 import { MysticGridBackdrop } from "../mystic/MysticVisual";
 import type { BuildInfo } from "../../services/buildInfo";
 import { SiteFooter } from "./SiteFooter";
@@ -14,11 +15,16 @@ type AppShellProps = {
  */
 export function AppShell(props: AppShellProps) {
   return (
-    <div class="site-shell">
-      <MysticGridBackdrop class="site-shell__grid" />
-      <SiteHeader />
-      <main class="site-main">{props.children}</main>
-      <SiteFooter buildInfo={props.buildInfo} />
-    </div>
+    <>
+      <GlobalLightningEasterEgg />
+      <div class="site-shell" data-lightning-gesture-region="background">
+        <MysticGridBackdrop class="site-shell__grid" />
+        <SiteHeader />
+        <main class="site-main" data-lightning-gesture-region="background">
+          {props.children}
+        </main>
+        <SiteFooter buildInfo={props.buildInfo} />
+      </div>
+    </>
   );
 }

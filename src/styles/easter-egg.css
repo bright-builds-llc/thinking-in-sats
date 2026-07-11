@@ -1,0 +1,43 @@
+.lightning-easter-egg {
+  position: fixed;
+  z-index: 200;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lightning-easter-egg__canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.lightning-easter-egg__canvas[data-strike-active="true"] {
+  opacity: 1;
+}
+
+.lightning-easter-egg__particle {
+  position: absolute;
+  z-index: 1;
+  display: block;
+  font-size: clamp(0.72rem, 1.6vw, 1rem);
+  line-height: 1;
+  filter: drop-shadow(0 0 0.4rem rgb(255 156 82 / 0.9));
+  will-change: top, left, transform;
+}
+
+.lightning-easter-egg__particle--static {
+  opacity: 0.82;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lightning-easter-egg__canvas {
+    opacity: 0;
+  }
+
+  .lightning-easter-egg__canvas[data-strike-active="true"] {
+    opacity: 0.58 !important;
+  }
+}

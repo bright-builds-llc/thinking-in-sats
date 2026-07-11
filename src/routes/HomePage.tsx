@@ -31,8 +31,8 @@ export function HomePage(props: HomePageProps) {
   });
 
   return (
-    <div class="page">
-      <section class="hero-grid">
+    <div class="page" data-lightning-gesture-region="background">
+      <section class="hero-grid" data-lightning-gesture-region="background">
         <HomeHeroSection />
         <QuoteReferencePanel
           isStale={props.quoteState.isStale}

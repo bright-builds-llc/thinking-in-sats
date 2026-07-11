@@ -89,7 +89,11 @@ export function QuizQuoteFallback() {
 
 export function QuizQuestionLayout(props: QuizQuestionLayoutProps) {
   return (
-    <div class="quiz-layout" ref={props.onQuizLayoutRef}>
+    <div
+      class="quiz-layout"
+      data-lightning-gesture-region="background"
+      ref={props.onQuizLayoutRef}
+    >
       <QuizCard item={props.quizView.currentItem} />
 
       <MysticSurface beam class="surface-card quiz-panel">
@@ -139,7 +143,7 @@ export function QuizCompletion(props: QuizCompletionProps) {
     Math.round((props.correctAnswers / Math.max(1, props.totalQuestions)) * 100);
 
   return (
-    <div class="quiz-results">
+    <div class="quiz-results" data-lightning-gesture-region="background">
       <MysticSurface
         as="section"
         beam

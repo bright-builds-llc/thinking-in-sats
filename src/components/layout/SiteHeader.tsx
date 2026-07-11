@@ -14,7 +14,7 @@ export function SiteHeader() {
     isActiveRoute(path) ? "page" : undefined;
 
   return (
-    <header class="site-header">
+    <header class="site-header" data-lightning-gesture-region="header">
       <div class="brand-block">
         <A class="brand-title" href="/">
           <MysticGradientText>Thinking In Sats</MysticGradientText>

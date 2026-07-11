@@ -235,3 +235,52 @@
 - The optional run URL travels through the existing Vite build constants and `BuildInfo` model. The footer renders the Built timestamp as an accessible external link when available and plain text otherwise.
 - A simulated Pages production build embedded `https://github.com/bright-builds-llc/thinking-in-sats/actions/runs/123456789`; the subsequent normal build contained no Actions run URL.
 - Focused domain and footer coverage passes. `git diff --check` and `bun run verify` passed with 18 test files and 79 tests.
+
+## task-global-lightning-easter-egg | 2026-07-10 16:19 | Add a five-tap lightning easter egg
+
+- [x] Recognize five qualifying pointer taps inside a rolling 800ms window.
+- [x] Ignore drags, long presses, secondary buttons, and multi-touch without blocking page interactions.
+- [x] Emit a gravity-driven spinning lightning emoji from every qualifying tap.
+- [x] Flash a procedural full-viewport lightning bolt when the gesture completes.
+- [x] Provide reduced-motion fallbacks for both effects.
+- [x] Add regression coverage, browser-check controls/desktop/mobile, and run `bun run verify`.
+
+### Completion review
+
+- A passive capture-phase pointer observer now recognizes five primary taps within an inclusive rolling 800ms window. It never prevents default behavior or stops propagation, and the visual overlay itself uses `pointer-events: none`.
+- Pointer candidates are rejected after more than 12px of travel, more than 600ms, a non-primary button, concurrent pointers, cancellation, or window blur. Regression coverage exercises all of these boundaries plus a real button click that still fires exactly once.
+- Every qualifying pointer tap emits a capped decorative ⚡ particle with randomized horizontal velocity, upward launch, continuous spin, and 940px/s² gravity. Five taps reuse the procedural branched renderer from the quiz celebration for a full-viewport strike.
+- Browser verification passed at 1280×900 and 390×844: mouse and touch-style sequences each produced five particles and an active canvas matching the viewport, a drag produced zero particles, the menu still opened normally, and mobile had no horizontal overflow. Measured particle positions rose from 401px to a 310px apex before falling to 717px while rotating.
+- Reduced-motion mode shows brief static emoji hints and one subdued 0.58-opacity bolt without flight or flicker. `git diff --check` and `bun run verify` passed with 20 test files and 92 tests.
+
+## task-five-finger-lightning | 2026-07-10 16:32 | Add five-finger lightning gestures
+
+- [x] Trigger the viewport strike when a fifth valid touch contact lands.
+- [x] Emit one particle per qualifying finger in multi-touch groups without advancing the rapid-tap counter.
+- [x] Preserve native scrolling, pinching, buttons, and the existing five-rapid-taps gesture.
+- [x] Reduce emoji size and raise the maximum spin rate to 1,440 degrees per second.
+- [x] Add regression coverage, browser-check mobile behavior, and run `bun run verify`.
+
+### Completion review
+
+- The passive observer now groups concurrent `pointerType: "touch"` contacts. It evaluates the group exactly once when active contacts first reach five and triggers immediately only when every contact remains within the 12px and 600ms tap boundaries.
+- Clean fingers in any multi-touch group emit independently at their release coordinates. Multi-touch groups never contribute to the rolling rapid-tap counter, while single mouse, pen, and touch input retain the existing five-in-800ms behavior.
+- Canceled, dragged, and long-held fingers emit nothing without suppressing qualifying siblings. Extra contacts after the fifth do not retrigger the strike, and blur still clears all gesture state.
+- Particle sizing is now `clamp(0.72rem, 1.6vw, 1rem)`, and randomized spin magnitude spans 420–1,440 degrees per second. Reduced-motion particles remain static.
+- Browser verification at 390×844 confirmed the fourth contact stayed inactive, the fifth activated before release, five releases produced five particles, the computed font size was 11.52px, `touch-action` remained `auto`, controls still worked, and there was no horizontal overflow. A moved two-finger gesture emitted nothing; reduced motion produced five static particles.
+- `git diff --check` and `bun run verify` passed with 22 test files and 98 tests.
+
+## task-background-only-lightning | 2026-07-10 17:02 | Restrict lightning gestures to page backgrounds
+
+- [x] Define explicit background and header gesture regions.
+- [x] Exclude panels, cards, footer content, and interactive header controls from particles and strikes.
+- [x] Apply the same eligibility rule to rapid taps and multi-finger groups.
+- [x] Add regression coverage for eligible and excluded targets.
+- [x] Browser-check background/header/panel behavior and run `bun run verify`.
+
+### Completion review
+
+- Background eligibility is now explicit rather than inferred from card class names. The shell, page-layout gaps, and non-interactive header content are eligible; foreground descendants, footer content, links, buttons, and other header controls are not.
+- Eligibility is captured on `pointerdown` and shared by emoji emission, the rolling five-tap counter, and five-finger validation. A foreground contact neither emits nor advances a gesture, and one foreground finger invalidates the group when it first reaches five contacts.
+- Browser verification at 390×844 confirmed one header-copy click emitted a particle, panel and Menu clicks emitted none, the Menu still worked, and five rapid shell-background clicks emitted five particles plus the full-screen strike without horizontal overflow.
+- Focused coverage passed with 19 tests. `git diff --check` and `bun run verify` passed with 22 test files and 102 tests.
