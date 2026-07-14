@@ -41,7 +41,7 @@ export function SiteHeader() {
               as={A}
               class={menuItemClass("/")}
               end
-              href="/"
+              href="/#timeline"
               inactiveClass=""
             >
               Line

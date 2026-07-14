@@ -43,7 +43,7 @@ function formatTickerNumber(value: number): string {
   return wholeNumberFormatter.format(Math.round(value));
 }
 
-function scrollTimelineIntoView() {
+export function scrollTimelineIntoView() {
   const maybeTimeline = document.getElementById("timeline");
 
   if (!maybeTimeline) {

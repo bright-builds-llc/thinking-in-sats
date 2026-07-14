@@ -1,6 +1,6 @@
 import { render, screen, within } from "@solidjs/testing-library";
 import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { formatApproxUsd } from "../domain/formatting";
 import type { EverydayItem } from "../domain/itemTypes";
@@ -77,6 +77,13 @@ function readRequiredText(root: ParentNode, selector: string): string {
 }
 
 describe("QuizPage", () => {
+  beforeEach(() => {
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: vi.fn(),
+    });
+  });
+
   afterEach(() => {
     Object.defineProperty(window, "scrollY", {
       configurable: true,
@@ -148,6 +155,53 @@ describe("QuizPage", () => {
       behavior: "smooth",
       top: 284,
     });
+  });
+
+  it("scrolls the next action into view after an answer", async () => {
+    // Arrange
+    const user = userEvent.setup();
+    const scrollIntoView = vi.mocked(HTMLElement.prototype.scrollIntoView);
+    render(() => <QuizPage items={items} quoteState={quoteState} />);
+    const choiceButtons = within(
+      screen.getByRole("list", { name: "Quiz answer choices" }),
+    ).getAllByRole("button");
+
+    // Act
+    await user.click(choiceButtons[0]!);
+    await flushMicrotask();
+
+    // Assert
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: "smooth",
+      block: "nearest",
+    });
+    expect(scrollIntoView.mock.instances[0]).toHaveClass("quiz-panel__actions");
+  });
+
+  it("scrolls the score into view after the final question", async () => {
+    // Arrange
+    const user = userEvent.setup();
+    const scrollIntoView = vi.mocked(HTMLElement.prototype.scrollIntoView);
+    render(() => <QuizPage items={[items[0]!]} quoteState={quoteState} />);
+    const choiceButtons = within(
+      screen.getByRole("list", { name: "Quiz answer choices" }),
+    ).getAllByRole("button");
+    await user.click(choiceButtons[0]!);
+    await flushMicrotask();
+    scrollIntoView.mockClear();
+
+    // Act
+    await user.click(screen.getByRole("button", { name: "See my score" }));
+    await flushMicrotask();
+
+    // Assert
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: "smooth",
+      block: "center",
+    });
+    expect(scrollIntoView.mock.instances[0]).toHaveClass(
+      "quiz-completion__score",
+    );
   });
 
   it("finishes after ten questions and shows the score screen", async () => {

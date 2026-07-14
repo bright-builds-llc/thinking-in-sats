@@ -1,4 +1,4 @@
-import { createMemo } from "solid-js";
+import { createMemo, onMount } from "solid-js";
 
 import { featuredEverydayItems } from "../content/items";
 import { deriveItemsWithSats } from "../domain/pricing";
@@ -9,6 +9,7 @@ import {
   QuickAnchorsSection,
   QuoteReferencePanel,
   QuoteSummarySection,
+  scrollTimelineIntoView,
   TimelineExplainerSection,
   TimelineVisualizationSection,
 } from "./HomePageSections";
@@ -28,6 +29,14 @@ export function HomePage(props: HomePageProps) {
     }
 
     return deriveItemsWithSats(featuredEverydayItems, quote.usdPerBitcoin);
+  });
+
+  onMount(() => {
+    if (window.location.hash !== "#/#timeline") {
+      return;
+    }
+
+    scrollTimelineIntoView();
   });
 
   return (

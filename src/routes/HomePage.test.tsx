@@ -49,7 +49,9 @@ const quoteState: QuoteState = {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  window.history.replaceState(null, "", "#/");
   Reflect.deleteProperty(window, "matchMedia");
+  Reflect.deleteProperty(HTMLElement.prototype, "scrollIntoView");
 });
 
 describe("HomePage", () => {
@@ -72,6 +74,26 @@ describe("HomePage", () => {
     fireEvent.click(
       getByRole("button", { name: "Explore prices in sats" }),
     );
+
+    // Assert
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      behavior: "smooth",
+      block: "start",
+    });
+  });
+
+  it("scrolls the vertical sats line into view after targeted route navigation", () => {
+    // Arrange
+    mockMatchMedia(false);
+    window.history.replaceState(null, "", "#/#timeline");
+    const scrollIntoView = vi.fn();
+    Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
+      configurable: true,
+      value: scrollIntoView,
+    });
+
+    // Act
+    render(() => <HomePage quoteState={quoteState} />);
 
     // Assert
     expect(scrollIntoView).toHaveBeenCalledWith({

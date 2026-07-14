@@ -32,6 +32,7 @@ type QuizQuestionLayoutProps = {
   maybeResult: QuizQuestionResult | null;
   maybeSelectedChoiceId: string | null;
   onChoiceSelect: (choiceId: string) => void;
+  onNextActionRef: (element: HTMLDivElement) => void;
   onNextQuestion: () => void;
   onQuizLayoutRef: (element: HTMLDivElement) => void;
   questionIndex: number;
@@ -44,6 +45,7 @@ type QuizCompletionProps = {
   correctAnswers: number;
   maybeShareStatus: string | null;
   onRestart: () => void;
+  onScoreRef: (element: HTMLDivElement) => void;
   onShare: () => Promise<void>;
   totalQuestions: number;
 };
@@ -123,7 +125,7 @@ export function QuizQuestionLayout(props: QuizQuestionLayoutProps) {
           )}.`}
         />
 
-        <div class="quiz-panel__actions">
+        <div class="quiz-panel__actions" ref={props.onNextActionRef}>
           <MysticActionButton
             class="primary-button"
             type="button"
@@ -159,6 +161,7 @@ export function QuizCompletion(props: QuizCompletionProps) {
         <div
           aria-label={`${props.correctAnswers} out of ${props.totalQuestions}, ${scorePercentage()} percent correct`}
           class="quiz-completion__score quiz-completion__score--halo"
+          ref={props.onScoreRef}
         >
           <strong>
             {props.correctAnswers} out of {props.totalQuestions}

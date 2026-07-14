@@ -63,7 +63,7 @@ describe("AppShell", () => {
 
     const menu = await screen.findByRole("menu");
     const lineItem = within(menu).getByRole("menuitem", { name: "Line" });
-    expect(lineItem).toHaveAttribute("href", "/");
+    expect(lineItem).toHaveAttribute("href", "/#timeline");
     expect(lineItem).toHaveAttribute("aria-current", "page");
     expect(lineItem).toHaveClass("site-menu-item--active");
     expect(within(menu).getByRole("menuitem", { name: "Quiz" })).toHaveAttribute(

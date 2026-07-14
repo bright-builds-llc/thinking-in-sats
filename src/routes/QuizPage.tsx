@@ -64,7 +64,23 @@ function scrollQuestionCardIntoView(
   });
 }
 
+function scrollQuizElementIntoView(
+  maybeElement: HTMLElement | undefined,
+  block: ScrollLogicalPosition,
+) {
+  if (typeof window === "undefined" || !maybeElement) {
+    return;
+  }
+
+  maybeElement.scrollIntoView({
+    behavior: prefersReducedMotion() ? "auto" : "smooth",
+    block,
+  });
+}
+
 export function QuizPage(props: QuizPageProps) {
+  let maybeCompletionScoreElement: HTMLDivElement | undefined;
+  let maybeNextActionElement: HTMLDivElement | undefined;
   let maybeQuizLayoutElement: HTMLDivElement | undefined;
   const [sessionItems, setSessionItems] = createSignal<EverydayItem[]>(
     createQuizSession(untrack(() => props.items)),
@@ -152,6 +168,9 @@ export function QuizPage(props: QuizPageProps) {
     }
 
     setMaybeSelectedChoiceId(choiceId);
+    queueMicrotask(() => {
+      scrollQuizElementIntoView(maybeNextActionElement, "nearest");
+    });
   };
 
   const handleNextQuestion = () => {
@@ -184,11 +203,14 @@ export function QuizPage(props: QuizPageProps) {
       }
     });
 
-    if (hasMoreQuestions) {
-      queueMicrotask(() => {
+    queueMicrotask(() => {
+      if (hasMoreQuestions) {
         scrollQuestionCardIntoView(maybeQuizLayoutElement);
-      });
-    }
+        return;
+      }
+
+      scrollQuizElementIntoView(maybeCompletionScoreElement, "center");
+    });
   };
 
   const handleRestart = () => {
@@ -233,6 +255,14 @@ export function QuizPage(props: QuizPageProps) {
     maybeQuizLayoutElement = element;
   };
 
+  const handleNextActionRef = (element: HTMLDivElement) => {
+    maybeNextActionElement = element;
+  };
+
+  const handleCompletionScoreRef = (element: HTMLDivElement) => {
+    maybeCompletionScoreElement = element;
+  };
+
   return (
     <section
       class="page quiz-page"
@@ -247,6 +277,7 @@ export function QuizPage(props: QuizPageProps) {
             answerRecords={answerRecords()}
             correctAnswers={correctAnswerCount()}
             maybeShareStatus={maybeShareStatus()}
+            onScoreRef={handleCompletionScoreRef}
             onRestart={handleRestart}
             onShare={handleShare}
             totalQuestions={quizItems().length}
@@ -264,6 +295,7 @@ export function QuizPage(props: QuizPageProps) {
               maybeResult={maybeResult()}
               maybeSelectedChoiceId={maybeSelectedChoiceId()}
               onChoiceSelect={handleChoiceSelect}
+              onNextActionRef={handleNextActionRef}
               onNextQuestion={handleNextQuestion}
               onQuizLayoutRef={handleQuizLayoutRef}
               questionIndex={questionIndex()}

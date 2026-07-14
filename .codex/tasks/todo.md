@@ -300,3 +300,40 @@
 - Haptics share the existing background/header eligibility boundary. Panels, controls, drags, and canceled gestures remain silent; five-finger contact requests an immediate strike followed by individual release feedback. Reduced-motion visuals remain static while haptics continue to follow OS settings.
 - Chromium browser instrumentation at 390×844 recorded `12, 12, 12, 12, [35, 30, 70]` for five rapid background taps. Header copy added one tap request; hero-panel and Menu clicks added none, the Menu still opened, and reduced-motion mode recorded one tap with a static particle.
 - Current Safari may silently no-op because WebKit patched programmatic switch-label haptics; no physical iPhone was available for a meaningful tactile check. `git diff --check` and `bun run verify` passed with 23 test files and 111 tests.
+
+## task-quiz-menu-line-navigation | 2026-07-13 20:53 CDT | Fix “Line” menu navigation during quiz
+
+- [x] Reproduce the quiz-menu “Line” failure with a deterministic automated browser signal.
+- [x] Minimize the failure and identify the root cause using ranked, falsifiable hypotheses.
+- [x] Add focused regression coverage at the real navigation seam.
+- [x] Implement the smallest robust fix without changing unrelated routes or menu behavior.
+- [x] Re-run the browser signal, focused tests, `bun run verify`, and review the diff.
+
+### Completion review
+
+- Completed 2026-07-13 21:00 CDT.
+- Root cause: the menu’s `Line` item linked only to the home route, and hash-router scrolling runs before the newly mounted home route contains the timeline target.
+- The item now targets `/#timeline`; `HomePage` honors that target after mount with the existing reduced-motion-aware scroll helper.
+- Regression coverage exercises the real header/router/home-page chain and the target-on-mount timing case.
+- Browser evidence: the original flow changed from `hash=#/`, `scrollY=0`, `timelineTop=1081` to `hash=#/#timeline` with the timeline reaching `timelineTop=0`; two repeated runs passed, as did reduced-motion mode.
+- Verification: focused tests passed; `git diff --check` and `bun run verify` passed with 23 test files and 112 tests.
+- Residual risk: browser verification used Chromium through the Playwright CLI because the repo has no persistent browser/E2E harness.
+
+## task-quiz-scroll-and-lightning-layering | 2026-07-13 21:06 CDT | Improve quiz progression and score effects
+
+- [x] Reproduce answer-action visibility, completion-score position, and lightning stacking failures with deterministic checks.
+- [x] Minimize each failure and identify the root causes with falsifiable hypotheses.
+- [x] Scroll the next action into view after an answer and the score into view after completion.
+- [x] Raise high-score lightning above the score halo without blocking result controls.
+- [x] Add regression coverage and browser-check representative desktop/mobile and reduced-motion flows.
+- [x] Run `git diff --check`, `bun run verify`, and review all accumulated changes.
+
+### Completion review
+
+- Completed 2026-07-13 21:15 CDT.
+- Root causes: answer selection and final completion had no post-render scroll effects, while the score lightning was explicitly layered beneath foreground completion content.
+- Answer selection now scrolls the Next/See Score action into the nearest visible position; completion centers the score circle. Both use smooth scrolling unless reduced motion requests immediate scrolling.
+- The high-score canvas now uses z-index `3`, above completion content, while retaining `pointer-events: none` so Share and Play Again remain usable.
+- Browser evidence at 390×844: the Next button was fully visible at 792–844px and the score was centered at 310–534px in both animated and reduced-motion modes. A deterministic desktop 10/10 reported active lightning at z-index `3`, above the score, with pointer events disabled.
+- Verification: focused quiz tests, TypeScript checking, `git diff --check`, and `bun run verify` passed; the full suite has 23 files and 115 tests.
+- Residual risk: stacking and scroll geometry were verified in Chromium because the repo has no persistent cross-browser E2E harness.
